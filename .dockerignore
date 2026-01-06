@@ -1,0 +1,45 @@
+__pycache__/
+*.py[oc]
+*.pyo
+*.pyd
+
+# Python build artifacts
+build/
+dist/
+wheels/
+*.egg-info/
+
+# Virtual environments
+.venv/
+
+# Local tooling / editor metadata
+.idea/
+.vscode/
+.DS_Store
+
+# Local env/config
+.env
+.env.local
+.env.*
+
+# Git & VCS
+.git/
+.gitignore
+
+# Cursor / local tooling state
+.cursor/
+
+# dbxp dev artifacts
+.dbxp/volumes/
+
+# Test code & coverage (not needed in runtime images)
+tests/
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Ruff / pyright caches
+.ruff_cache/
+.basedpyright/
+
+

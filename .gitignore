@@ -1,0 +1,39 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.coverage
+.ruff_cache/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+
+# dbxp files
+.dbxp/volumes/
+.dbxp/dbx-proxy.cfg
+.dbxp/dev.docker-compose.yaml
+
+# build files
+dist
+
+# env files
+.env
+.env.local
+.env.*
+
+# mac
+.DS_Store
+
+# IDE's
+.idea/
+.vscode/
+
+# terraform files
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup

@@ -1,0 +1,29 @@
+name: Build docker images
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-proxy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build proxy image (multi-platform, no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/proxy.Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: false
