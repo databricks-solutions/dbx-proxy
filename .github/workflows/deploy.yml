@@ -14,7 +14,7 @@ env:
   IMAGE_NAME: dbx-proxy
 
 jobs:
-  deploy-proxy:
+  docker-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,21 +39,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Compute image tags
-        id: meta
+      - name: Retrieve git tag
         shell: bash
         run: |
-          IMAGE_BASE="${REGISTRY}/${IMAGE_NAMESPACE}/${IMAGE_NAME}"
-          SHA_TAG="${GITHUB_SHA::7}"
+          # GITHUB_REF_NAME is like "v0.1.0"; strip leading "v" -> "0.1.0"
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
 
-          # Strip the leading "v" from git tag refs/tags/vX.Y.Z -> X.Y.Z
-          VERSION="${GITHUB_REF#refs/tags/v}"
-
-          echo "tags<<EOF" >> "$GITHUB_OUTPUT"
-          echo "${IMAGE_BASE}:${VERSION}"
-          echo "${IMAGE_BASE}:${SHA_TAG}"
-          echo "${IMAGE_BASE}:latest"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+      - name: Retrieve git short sha
+        shell: bash
+        run: |
+          SHORT_SHA="${GITHUB_SHA::7}"
+          echo "SHORT_SHA=${SHORT_SHA}" >> "$GITHUB_ENV"
 
       - name: Build and push proxy image (multi-platform)
         uses: docker/build-push-action@v6
@@ -62,4 +59,7 @@ jobs:
           file: docker/proxy.Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
