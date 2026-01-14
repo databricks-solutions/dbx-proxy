@@ -1,7 +1,11 @@
 set -eu
 
 PID="/dbx-proxy/run/dbx-proxy.pid"
-CONFIG="/dbx-proxy/etc/default.cfg"
+CONFIG="/dbx-proxy/conf/default.cfg"
+
+if [ -f "/dbx-proxy/conf/dbx-proxy.cfg" ]; then
+  CONFIG="/dbx-proxy/conf/dbx-proxy.cfg"
+fi
 
 log() {
   # 2025-12-20 13:30:01,123 | LEVEL | message

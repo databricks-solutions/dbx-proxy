@@ -1,6 +1,6 @@
-output "dbx_proxy_listener" {
-  description = "Rendered listener.yaml content."
-  value       = local.dbx_proxy_listener_yaml
+output "dbx_proxy_cfg" {
+  description = "Rendered dbx-proxy config (dbx-proxy.cfg) derived from dbx_proxy_listener."
+  value       = local.dbx_proxy_cfg
 }
 
 output "docker_compose" {

@@ -12,7 +12,7 @@ RUN apt-get update --fix-missing \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ./docker/proxy.entrypoint.sh /dbx-proxy/entrypoint.sh
-COPY ./docker/default.cfg /dbx-proxy/etc/default.cfg
+COPY ./docker/default.cfg /dbx-proxy/conf/default.cfg
 
 RUN mkdir -p /dbx-proxy/conf /dbx-proxy/run /dbx-proxy/log /dbx-proxy/etc \
     && chown -R haproxy:dbx-proxy /dbx-proxy

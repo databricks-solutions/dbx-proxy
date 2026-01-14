@@ -20,10 +20,10 @@ locals {
   cloud_config = {
     write_files = [
       {
-        path        = "/dbx-proxy/conf/listener.yaml"
+        path        = "/dbx-proxy/conf/dbx-proxy.cfg"
         owner       = "root:root"
         permissions = "0644"
-        content     = module.common.dbx_proxy_listener
+        content     = module.common.dbx_proxy_cfg
       },
       {
         path        = "/dbx-proxy/docker-compose.yaml"

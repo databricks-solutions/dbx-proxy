@@ -1,4 +1,60 @@
 services:
+  test-render-config:
+    build:
+      context: ./render-config
+      dockerfile: Dockerfile
+    container_name: test-render-config
+    working_dir: /tmp/common
+    volumes:
+      - ../../terraform/common:/workspace/common:ro
+      - ./render-config/terraform.tfvars:/workspace/terraform.tfvars:ro
+      - conf:/out
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -eux
+        rm -rf /tmp/common
+        cp -R /workspace/common /tmp/common
+        cd /tmp/common
+        terraform init -backend=false -input=false
+        terraform plan -refresh=false -input=false -var-file=/workspace/terraform.tfvars -out=/tmp/plan.tfplan
+        # Write atomically so other containers don't observe a partially-written file.
+        terraform show -json /tmp/plan.tfplan | jq -r '.planned_values.outputs.dbx_proxy_cfg.value' > /out/dbx-proxy.cfg.tmp
+        mv /out/dbx-proxy.cfg.tmp /out/dbx-proxy.cfg
+        # Keep the container alive so `--abort-on-container-exit` is driven by `test-runner`,
+        exec tail -f /dev/null
+
+  test-backend-database:
+    build:
+      context: .
+      dockerfile: backends/backend.Dockerfile
+    container_name: test-backend-database
+    environment:
+      PORT: "5432"
+      BANNER: "test-backend-database"
+    command: ["python", "/app/backends/tcp_banner_server.py"]
+
+  test-backend-app-a:
+    build:
+      context: .
+      dockerfile: backends/backend.Dockerfile
+    container_name: test-backend-app-a
+    environment:
+      PORT: "443"
+      RESPONSE_BODY: "APP_A"
+    command: ["python", "/app/backends/tls_http_server.py"]
+
+  test-backend-app-b:
+    build:
+      context: .
+      dockerfile: backends/backend.Dockerfile
+    container_name: test-backend-app-b
+    environment:
+      PORT: "443"
+      RESPONSE_BODY: "APP_B"
+    command: ["python", "/app/backends/tls_http_server.py"]
+
   test-dbx-proxy:
     build:
       context: ../../
@@ -6,8 +62,41 @@ services:
     container_name: test-dbx-proxy
     environment:
       DBX_PROXY_HEALTH_PORT: "8080"
+    cap_add:
+      - NET_BIND_SERVICE
+    volumes:
+      - conf:/dbx-proxy/conf.generated:ro
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -eux
+        # Wait for the rendered config to appear (render step runs in a separate container).
+        i=0
+        while [ ! -s /dbx-proxy/conf.generated/dbx-proxy.cfg ]; do
+          i=$$(( $$i + 1 ))
+          if [ "$$i" -ge 60 ]; then
+            echo "dbx-proxy.cfg did not appear in time" >&2
+            exit 1
+          fi
+          sleep 1
+        done
+        cp /dbx-proxy/conf.generated/dbx-proxy.cfg /dbx-proxy/conf/dbx-proxy.cfg
+        exec sh /dbx-proxy/entrypoint.sh
     ports:
       - "8080:8080"
+    expose:
+      - "443"
+      - "5432"
+    depends_on:
+      test-render-config:
+        condition: service_started
+      test-backend-database:
+        condition: service_started
+      test-backend-app-a:
+        condition: service_started
+      test-backend-app-b:
+        condition: service_started
 
   test-runner:
     build:
@@ -17,5 +106,12 @@ services:
     environment:
       DBX_PROXY_HOST: "test-dbx-proxy"
       DBX_PROXY_HEALTH_PORT: "8080"
+      DBX_PROXY_TCP_PORT: "5432"
+      DBX_PROXY_TLS_PORT: "443"
     depends_on:
       - test-dbx-proxy
+    volumes:
+      - conf:/proxy-conf:ro
+
+volumes:
+  conf: {}
