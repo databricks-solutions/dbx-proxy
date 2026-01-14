@@ -7,8 +7,33 @@ on:
   workflow_dispatch:
 
 jobs:
+  docker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Docker and Docker Compose are available
+        run: |
+          set -euxo pipefail
+          docker version
+          docker compose version
+
+      - name: Run dockerized tests (healthcheck)
+        run: |
+          set -euxo pipefail
+          docker compose -f tests/docker/docker-compose.yaml up --build --abort-on-container-exit --exit-code-from test-runner
+
+      - name: Clean up dockerized tests
+        if: always()
+        run: |
+          set -euxo pipefail
+          docker compose -f tests/docker/docker-compose.yaml down -v --remove-orphans
+
   docker-build:
     runs-on: ubuntu-latest
+    needs: docker-test
 
     steps:
       - name: Checkout repository

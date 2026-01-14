@@ -1,0 +1,21 @@
+services:
+  test-dbx-proxy:
+    build:
+      context: ../../
+      dockerfile: ./docker/proxy.Dockerfile
+    container_name: test-dbx-proxy
+    environment:
+      DBX_PROXY_HEALTH_PORT: "8080"
+    ports:
+      - "8080:8080"
+
+  test-runner:
+    build:
+      context: ../../
+      dockerfile: ./tests/docker/Dockerfile
+    container_name: test-runner
+    environment:
+      DBX_PROXY_HOST: "test-dbx-proxy"
+      DBX_PROXY_HEALTH_PORT: "8080"
+    depends_on:
+      - test-dbx-proxy

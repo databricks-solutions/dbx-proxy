@@ -11,26 +11,8 @@ log() {
   echo "$ts | $lvl | $msg"
 }
 
-graceful_stop() {
-  STOPPED=1
-  log "INFO" "received termination signal, stopping dbx-proxy ..."
-  if [ -f "$PID" ]; then
-    kill -TERM "$(cat "$PID")" 2>/dev/null || true
-  fi
-}
-
-trap graceful_stop TERM INT
-
-start_proxy() {
-  if [ -f "${PID}" ]; then
-    # Assume proxy is already running; do not start another instance.
-    return
-  fi
-  log "INFO" "starting dbx-proxy ..."
-  haproxy -Ws -db -f "${CONFIG}" -p "${PID}" &
-}
-
 log "INFO" "validating initial configuration at ${CONFIG} ..."
 haproxy -c -f "${CONFIG}"
 
-start_proxy
+log "INFO" "starting dbx-proxy ..."
+exec haproxy -Ws -db -f "${CONFIG}" -p "${PID}"

@@ -34,6 +34,8 @@ wheels/
 
 # Test code & coverage (not needed in runtime images)
 tests/
+!tests/unit_tests/
+!tests/unit_tests/**
 .pytest_cache/
 .coverage
 coverage.xml
