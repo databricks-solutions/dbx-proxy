@@ -1,6 +1,6 @@
 services:
   dbx-proxy:
-    image: "ghcr.io/dnks0/dbx-proxy/dbx-proxy:${dbx_proxy_image_version}"
+    image: "ghcr.io/dnks0/dbx-proxy/proxy:${dbx_proxy_image_version}"
     container_name: "dbx-proxy"
     environment:
       - DBX_PROXY_HEALTH_PORT=${dbx_proxy_health_port}
