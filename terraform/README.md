@@ -58,6 +58,7 @@ terraform apply
 ```
 
 After apply, use the output `vpc_endpoint_service_name` when creating Databricks private endpoint rules (see Databricks guide linked above).
+Also, make sure to add a domain of your choice as private endpoint rule on your NCC that you could use for [troubleshooting](../README.md#troubleshooting) purposes.
 
 ---
 
@@ -200,3 +201,30 @@ dbx_proxy_listener = [
 - `dbx-proxy` health endpoint is `GET /status` on `dbx_proxy_health_port` (default `8080`).
 - AWS NLB target groups use the health port for health checks.
 - The AWS implementation also creates an **optional NLB listener** on `dbx_proxy_health_port` so the health endpoint can be reached through the NLB/PrivateLink (unless the health port is already used as a normal listener port).
+
+---
+
+### Limitations & tradeoffs of the current implementation
+
+This module is intentionally minimal right now. The following limitations are important for production planning:
+
+- **Single instance / no horizontal scaling by default**
+  - The AWS ASG is configured as `min=desired=max=1`, so you get **one EC2 instance** running `dbx-proxy`.
+  - **Mitigation**: increase `max_size` / `desired_capacity` (requires module changes today) and consider multi-AZ designs.
+
+- **Planned downtime during updates**
+  - The ASG uses `instance_refresh` with `min_healthy_percentage = 0` to ensure launch template updates roll out even with a single instance.
+  - This implies **downtime during replacement** on apply (terminate -> relaunch).
+  - **Mitigation**: run at least 2 instances and set `min_healthy_percentage` accordingly (requires module changes today).
+
+- **Outbound internet dependency (when bootstrapping)**
+  - If you let the module create networking and keep `enable_nat_gateway = true`, instances use NAT for outbound access.
+  - Cloud-init installs Docker and downloads the Docker Compose plugin from GitHub, so **egress to the internet is required** (or you must customize the bootstrap/AMI).
+
+- **AWS-only**
+  - The module is structured for multi-cloud, but **only AWS is implemented** right now.
+
+- **Databricks serverless private connectivity constraints apply**
+  - Databricks enforces limits around NCCs, private endpoints, and private endpoint rules (including limits on the number of domain names per rule).
+  - Treat these as **external constraints** that influence how you model `dbx_proxy_listener`.
+  - Reference: [Configure private connectivity to resources in your VPC](https://docs.databricks.com/aws/en/security/network/serverless-network-security/pl-to-internal-network).

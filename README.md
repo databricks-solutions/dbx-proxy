@@ -9,8 +9,8 @@ Many enterprise resources live in private networks and are not reachable from se
 ### What you get
 
 - **Forwarding of L4 & L7 network traffic** based on your configuration
-  - L4 (TCP) forwarding
-  - L7 (HTTP) forwarding with **SNI-based routing**
+  - L4 (TCP): forwarding of plain TCP traffic, e.g. for databases
+  - L7 (HTTP) forwarding of HTTP(s) traffic with **SNI-based routing**, e.g. for applications/APIS
 - **Terraform module** ready to use (currently **AWS only**)
 
 ### Deployment (Terraform) / How to use
@@ -67,3 +67,6 @@ To validate that the proxy is up and reachable,run the following from a serverle
 
 curl -sS -w '\nHTTP %{http_code}\n' http://<ncc-endpoint-rule-domain>:8080/status
 ```
+
+### Limitations / Trade-Offs
+Before going to production, please review the following [limitations & trade-offs](terraform/README.md#limitations--tradeoffs-of-the-current-implementation).
