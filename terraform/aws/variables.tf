@@ -89,7 +89,7 @@ variable "nlb_arn" {
 variable "instance_type" {
   description = "EC2 instance type for dbx-proxy instances."
   type        = string
-  default     = "t3.medium"
+  default     = "t4g.medium"
 }
 
 variable "min_capacity" {

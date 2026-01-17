@@ -3,7 +3,7 @@ data "aws_ec2_instance_type" "this" {
 }
 
 data "aws_ssm_parameter" "al2023_ami_id" {
-  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64"
 }
 
 data "aws_iam_policy_document" "this" {

@@ -5,7 +5,7 @@ tags={}
 deployment_mode="bootstrap"
 
 # AWS resources
-instance_type="t3.medium"
+instance_type="t4g.medium"
 
 # dbx-proxy configuration
 dbx_proxy_image_version="0.1.0"

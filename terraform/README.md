@@ -90,7 +90,7 @@ These variables define what the proxy should do (listeners, health port, image t
 | `prefix` | `string` | `null` | Optional naming prefix. A randomized suffix is always appended to avoid collisions. |
 | `tags` | `map(string)` | `{}` | Extra tags applied to AWS resources (also used as provider default tags). |
 | `deployment_mode` | `string` | `"bootstrap"` | Controls whether the module bootstraps networking/NLB (`bootstrap`) or attaches to existing infrastructure (`proxy-only`). See **Deployment mode behavior** below. |
-| `instance_type` | `string` | `"t3.medium"` | EC2 instance type for proxy instances. |
+| `instance_type` | `string` | `"t4g.medium"` | EC2 instance type for proxy instances. |
 | `min_capacity` | `number` | `1` | Minimum number of dbx-proxy instances. |
 | `max_capacity` | `number` | `1` | Maximum number of dbx-proxy instances. |
 | `vpc_id` | `string` | `null` | Existing VPC ID. Required for `proxy-only` mode. If `null`, a VPC can be bootstrapped in `bootstrap` mode. |
