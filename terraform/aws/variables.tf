@@ -107,7 +107,7 @@ variable "max_capacity" {
 variable "dbx_proxy_image_version" {
   description = "Docker image version for dbx-proxy."
   type        = string
-  default     = "0.1.0"
+  default     = "0.1.1"
 }
 
 variable "dbx_proxy_health_port" {

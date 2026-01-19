@@ -8,6 +8,6 @@ deployment_mode="bootstrap"
 instance_type="t4g.medium"
 
 # dbx-proxy configuration
-dbx_proxy_image_version="0.1.0"
+dbx_proxy_image_version="0.1.1"
 dbx_proxy_health_port=8080
 dbx_proxy_listener=[]

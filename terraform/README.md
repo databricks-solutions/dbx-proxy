@@ -41,7 +41,7 @@ In your existing Terraform stack, add:
 
 ```hcl
 module "dbx_proxy" {
-  source = "github.com/dnks0/dbx-proxy//terraform/aws?ref=v0.1.0"
+  source = "github.com/dnks0/dbx-proxy//terraform/aws?ref=v<release>"
 
   # AWS config
   region = "eu-central-1"
@@ -49,7 +49,7 @@ module "dbx_proxy" {
   ...
 
   # dbx-proxy config
-  dbx_proxy_image_version = "0.1.0"
+  dbx_proxy_image_version = "<release>"
   dbx_proxy_health_port   = 8080
   dbx_proxy_listener      = []
 }
@@ -77,10 +77,11 @@ These variables define what the proxy should do (listeners, health port, image t
 
 | Variable | Type | Default | Description |
 |---|---:|---:|---|
-| `dbx_proxy_image_version` | `string` | `"0.1.0"` | Docker image tag/version of `dbx-proxy` to deploy. |
+| `dbx_proxy_image_version` | `string` | `"0.2.0"` | Docker image tag/version of `dbx-proxy` to deploy. |
 | `dbx_proxy_health_port` | `number` | `8080` | Health port exposed by `dbx-proxy` (HTTP `GET /status`). Also used for NLB target group health checks. |
 | `dbx_proxy_max_connections` | `number` | `null` | Optional HAProxy `maxconn` override. If unset, the AWS module derives a value from vCPU and memory of the selected instance-type. |
 | `dbx_proxy_listener` | `list(object)` | `[]` | Listener configuration (ports/modes/routes/destinations). See **Listener configuration** below. |
+| `deployment_mode` | `string` | `"bootstrap"` | Controls whether the module bootstraps networking/NLB (`bootstrap`) or attaches to existing infrastructure (`proxy-only`). See **Deployment mode behavior** below. |
 
 #### AWS-specific variables (`terraform/aws`)
 
@@ -89,7 +90,6 @@ These variables define what the proxy should do (listeners, health port, image t
 | `region` | `string` | (required) | AWS region to deploy to. |
 | `prefix` | `string` | `null` | Optional naming prefix. A randomized suffix is always appended to avoid collisions. |
 | `tags` | `map(string)` | `{}` | Extra tags applied to AWS resources (also used as provider default tags). |
-| `deployment_mode` | `string` | `"bootstrap"` | Controls whether the module bootstraps networking/NLB (`bootstrap`) or attaches to existing infrastructure (`proxy-only`). See **Deployment mode behavior** below. |
 | `instance_type` | `string` | `"t4g.medium"` | EC2 instance type for proxy instances. |
 | `min_capacity` | `number` | `1` | Minimum number of dbx-proxy instances. |
 | `max_capacity` | `number` | `1` | Maximum number of dbx-proxy instances. |

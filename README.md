@@ -23,7 +23,7 @@ Include the module in your Terraform stack:
 ```hcl
 module "dbx_proxy" {
 
-  source = "github.com/dnks0/dbx-proxy//terraform/aws?ref=v0.1.0"
+  source = "github.com/dnks0/dbx-proxy//terraform/aws?ref=v<release>"
 
   # aws config
   region    = "eu-central-1"
@@ -31,7 +31,7 @@ module "dbx_proxy" {
   ...
 
   # dbx-proxy config
-  dbx_proxy_image_version = "0.1.0"
+  dbx_proxy_image_version = "<release>"
   dbx_proxy_health_port   = 8080
 
   # Example: forward TCP/443 to a private target in your VPC
