@@ -142,7 +142,6 @@ resource "aws_autoscaling_group" "this" {
 
   instance_refresh {
     strategy = "Rolling"
-    triggers = ["launch_template"]
 
     preferences {
       # With desired=max=1, allowing downtime lets the ASG replace the single instance

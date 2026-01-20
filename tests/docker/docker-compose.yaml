@@ -7,7 +7,7 @@ services:
     working_dir: /tmp/common
     volumes:
       - ../../terraform/common:/workspace/common:ro
-      - ./render-config/terraform.tfvars:/workspace/terraform.tfvars:ro
+      - ./render-config/.tfvars:/workspace/.tfvars:ro
       - conf:/out
     entrypoint:
       - /bin/sh
@@ -18,7 +18,7 @@ services:
         cp -R /workspace/common /tmp/common
         cd /tmp/common
         terraform init -backend=false -input=false
-        terraform plan -refresh=false -input=false -var-file=/workspace/terraform.tfvars -out=/tmp/plan.tfplan
+        terraform plan -refresh=false -input=false -var-file=/workspace/.tfvars -out=/tmp/plan.tfplan
         # Write atomically so other containers don't observe a partially-written file.
         terraform show -json /tmp/plan.tfplan | jq -r '.planned_values.outputs.dbx_proxy_cfg.value' > /out/dbx-proxy.cfg.tmp
         mv /out/dbx-proxy.cfg.tmp /out/dbx-proxy.cfg

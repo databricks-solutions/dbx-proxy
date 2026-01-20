@@ -14,10 +14,6 @@ terraform {
   }
 }
 
-provider "random" {}
-
-provider "cloudinit" {}
-
 provider "aws" {
   # authentication configured via env!
   region = var.region
