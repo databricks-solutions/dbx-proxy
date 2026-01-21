@@ -13,11 +13,16 @@ Connectivity to your custom resources can be configured via a dedicated Private 
 
 ### What you get
 
+`dbx-proxy` is a haproxy based load-balancing solution and runs as an additional component between the NLB and your private resources. It receives all traffic and is capable of handling fanout to multiple resources. Traffic flows from Databricks Serverless through the Private Endpoint & NLB, into `dbx-proxy`, and then on to your target resources based on your provided configuration. Applications can be reached through individual domains: your NLB listener forwards the connection to `dbx-proxy`, which for http traffic inspects the domain (SNI/Host) and maps it to the configured backend targets (for example, `app-a.domain` -> targets for app A, `app-b.domain` -> targets for app B). This allows to listen on a single port and route traffic to multiple targets. For plain tcp traffic, e.g. database connections, one listener maps to one target/database.
+
+![](resources/img/overview-fanout.png)
+
 - **Forwarding of L4 & L7 network traffic** based on your configuration
   - L4 (TCP): forwarding of plain TCP traffic, e.g. for databases
   - L7 (HTTP) forwarding of HTTP(s) traffic with **SNI-based routing**, e.g. for applications/APIS
 - **Terraform module** ready to use (currently **AWS only**)
 - No TLS termination, only passthrough!
+
 
 ### High availability (overview)
 
