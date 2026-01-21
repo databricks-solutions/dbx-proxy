@@ -33,6 +33,11 @@ variable "subnet_ids" {
   type        = list(string)
 }
 
+variable "subnet_cidrs" {
+  description = "Subnet CIDR blocks used for NLB security group egress rules."
+  type        = list(string)
+}
+
 variable "dbx_proxy_health_port" {
   description = "Port on which the dbx-proxy instances expose a TCP health check."
   type        = number

@@ -13,6 +13,17 @@ resource "aws_lb" "this" {
   tags = var.tags
 }
 
+resource "aws_vpc_security_group_egress_rule" "this" {
+  count = local.nlb_has_security_groups ? length(local.nlb_sg_egress_rules) : 0
+
+  security_group_id = local.nlb_sg_egress_rules[count.index].security_group_id
+  from_port         = local.nlb_sg_egress_rules[count.index].port
+  to_port           = local.nlb_sg_egress_rules[count.index].port
+  ip_protocol       = "tcp"
+  cidr_ipv4         = local.nlb_sg_egress_rules[count.index].cidr
+  description       = local.nlb_sg_egress_rules[count.index].description
+}
+
 # Optional: expose the dbx-proxy health port via the NLB so callers can reach it directly
 # (e.g. through the PrivateLink endpoint). If the health port is already used as a regular
 # listener port, we skip creating this additional listener/TG to avoid a conflict.

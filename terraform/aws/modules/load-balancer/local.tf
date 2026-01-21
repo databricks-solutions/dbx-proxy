@@ -4,6 +4,24 @@ locals {
   nlb_dns_name = var.bootstrap_load_balancer ? aws_lb.this[0].dns_name : data.aws_lb.this[0].dns_name
   nlb_zone_id  = var.bootstrap_load_balancer ? aws_lb.this[0].zone_id : data.aws_lb.this[0].zone_id
 
+  nlb_has_security_groups = var.bootstrap_load_balancer ? false : length(data.aws_lb.this[0].security_groups) > 0
+
+  nlb_security_group_ids = local.nlb_has_security_groups ? data.aws_lb.this[0].security_groups : []
+
+  nlb_listener_for_egress_rules = concat(
+    [for l in var.dbx_proxy_listener : { port = l.port, description = "Databricks to NLB to dbx-proxy listener ${l.name}" }],
+    contains([for l in var.dbx_proxy_listener : l.port], var.dbx_proxy_health_port) ? [] : [{ port = var.dbx_proxy_health_port, description = "NLB to dbx-proxy health checks" }],
+  )
+
+  nlb_sg_egress_rules = local.nlb_has_security_groups ? [
+    for pair in setproduct(local.nlb_security_group_ids, local.nlb_listener_for_egress_rules, var.subnet_cidrs) : {
+      security_group_id = pair[0]
+      description       = pair[1].description
+      port              = pair[1].port
+      cidr              = pair[2]
+    }
+  ] : []
+
   allowed_principals = [
     "arn:aws:iam::565502421330:role/private-connectivity-role-${var.region}"
   ]

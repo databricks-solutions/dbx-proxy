@@ -36,6 +36,7 @@ module "load_balancer" {
 
   vpc_id                  = local.vpc_id
   subnet_ids              = local.subnet_ids
+  subnet_cidrs            = local.subnet_cidrs
 
   dbx_proxy_health_port   = var.dbx_proxy_health_port
   dbx_proxy_listener      = var.dbx_proxy_listener
