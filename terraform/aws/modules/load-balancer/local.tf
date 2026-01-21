@@ -10,7 +10,7 @@ locals {
 
   nlb_listener_for_egress_rules = concat(
     [for l in var.dbx_proxy_listener : { port = l.port, description = "Databricks to NLB to dbx-proxy listener ${l.name}" }],
-    contains([for l in var.dbx_proxy_listener : l.port], var.dbx_proxy_health_port) ? [] : [{ port = var.dbx_proxy_health_port, description = "NLB to dbx-proxy health checks" }],
+    contains([for l in var.dbx_proxy_listener : l.port], var.dbx_proxy_health_port) ? [] : [{ port = var.dbx_proxy_health_port, description = "Databricks to NLB to dbx-proxy health check" }],
   )
 
   nlb_sg_egress_rules = local.nlb_has_security_groups ? [

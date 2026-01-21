@@ -18,7 +18,7 @@ resource "aws_security_group" "this" {
 
   # Health check port
   ingress {
-    description = "NLB to dbx-proxy health checks"
+    description = "Databricks to NLB to dbx-proxy health check"
     from_port   = var.dbx_proxy_health_port
     to_port     = var.dbx_proxy_health_port
     protocol    = "tcp"
