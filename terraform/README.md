@@ -260,14 +260,16 @@ dbx_proxy_listener = [
 
 This module is intentionally minimal right now. The following limitations are important for production planning:
 
-- **Single instance / no horizontal scaling by default**
-  - The AWS ASG is configured as `min=desired=max=1`, so you get **one EC2 instance** running `dbx-proxy`.
-  - **Mitigation**: increase `max_size` / `desired_capacity` (requires module changes today) and consider multi-AZ designs.
+- **Single instance by default**
+  - By default `min_capacity=1` and `max_capacity=1`, so you get **one EC2 instance** running `dbx-proxy`.
+  - The ASG is configured with `desired_capacity = max_capacity` (so increasing `max_capacity` increases the steady-state instance count).
+  - **Mitigation**: set `max_capacity` (and typically `min_capacity`) to `>= 2` and ensure `subnet_ids` span multiple AZs.
 
 - **Planned downtime during updates**
   - The ASG uses `instance_refresh` with `min_healthy_percentage = 0` to ensure launch template updates roll out even with a single instance.
   - This implies **downtime during replacement** on apply (terminate -> relaunch).
-  - **Mitigation**: run at least 2 instances and set `min_healthy_percentage` accordingly (requires module changes today).
+  - When `max_capacity > 1`, the module sets `min_healthy_percentage = 50` to reduce/avoid downtime during rolling refreshes.
+  - **Mitigation**: run at least 2 instances by setting `max_capacity >= 2` (and typically `min_capacity >= 2`) and use subnets in multiple AZs.
   - On changes to `dbx_proxy_listener`, `terraform apply` updates the EC2 launch template `user_data`, and the ASG replaces the instance (short downtime) so the new config is applied via cloud-init.
 
 - **Outbound internet dependency (when bootstrapping)**

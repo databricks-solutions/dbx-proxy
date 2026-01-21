@@ -13,7 +13,7 @@ Connectivity to your custom resources can be configured via a dedicated Private 
 
 ### What you get
 
-`dbx-proxy` is a haproxy based load-balancing solution and runs as an additional component between the NLB and your private resources. It receives all traffic and is capable of handling fanout to multiple resources. Traffic flows from Databricks Serverless through the Private Endpoint & NLB, into `dbx-proxy`, and then on to your target resources based on your provided configuration. Applications can be reached through individual domains: your NLB listener forwards the connection to `dbx-proxy`, which for http traffic inspects the domain (SNI/Host) and maps it to the configured backend targets (for example, `app-a.domain` -> targets for app A, `app-b.domain` -> targets for app B). This allows to listen on a single port and route traffic to multiple targets. For plain tcp traffic, e.g. database connections, one listener maps to one target/database.
+`dbx-proxy` is a haproxy based load-balancing solution and runs as an additional component between the NLB and your private resources. It receives all traffic and is capable of handling fanout to multiple resources. Traffic flows from Databricks Serverless through the Private Endpoint & NLB, into `dbx-proxy`, and then on to your target resources based on your provided configuration. Applications can be reached through individual domains: your NLB listener forwards the connection to `dbx-proxy`, which for TLS passthrough traffic inspects the domain via SNI and maps it to the configured backend targets (for example, `app-a.domain` -> targets for app A, `app-b.domain` -> targets for app B). This allows to listen on a single port and route traffic to multiple targets. For plain tcp traffic, e.g. database connections, one listener maps to one target/database.
 
 ![](resources/img/overview-fanout.png)
 
@@ -24,7 +24,7 @@ Connectivity to your custom resources can be configured via a dedicated Private 
 - No TLS termination, only passthrough!
 
 
-### High availability (overview)
+### High availability
 
 `dbx-proxy` is placed behind an AWS Network Load Balancer, which spreads connections across the instances in the Auto Scaling Group. Availability depends on how many instances you run and whether your subnets span multiple AZs. See the Terraform module details for configuration and behavior: [High availability (AWS)](terraform/README.md#high-availability-aws).
 
@@ -73,7 +73,7 @@ More details about the Terraform module and configurations can be found [here](t
 
 You will still need to configure the Databricks-side objects like NCC, private endpoint rules and accept the connection on your endpoint-service.
 
-By default the module runs in `deployment_mode = "bootstrap"` and can create networking and the NLB/endpoint service. If you already have networking use `deployment_mode = "bootstrap"` and provide `vpc_id`, and `subnet_ids`. If you already have networking/NLB, set `deployment_mode = "proxy-only"` and provide `vpc_id`, `subnet_ids`, and `nlb_arn` (see Terraform docs for details).
+By default the module runs in `deployment_mode = "bootstrap"` and can create networking, NLB + endpoint service. If you already have a VPC/subnets, keep `deployment_mode = "bootstrap"` and provide `vpc_id` and `subnet_ids`. If you already have an NLB as well, set `deployment_mode = "proxy-only"` and provide `vpc_id`, `subnet_ids`, and `nlb_arn` (see Terraform docs for details).
 
 ### Troubleshooting
 
