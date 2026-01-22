@@ -24,12 +24,7 @@ resource "aws_vpc_security_group_egress_rule" "this" {
   description       = local.nlb_sg_egress_rules[count.index].description
 }
 
-# Optional: expose the dbx-proxy health port via the NLB so callers can reach it directly
-# (e.g. through the PrivateLink endpoint). If the health port is already used as a regular
-# listener port, we skip creating this additional listener/TG to avoid a conflict.
 resource "aws_lb_target_group" "health" {
-  count = contains([for l in var.dbx_proxy_listener : l.port], var.dbx_proxy_health_port) ? 0 : 1
-
   name        = "dbx-proxy-tg-health"
   port        = var.dbx_proxy_health_port
   protocol    = "TCP"
@@ -49,16 +44,21 @@ resource "aws_lb_target_group" "health" {
 }
 
 resource "aws_lb_listener" "health" {
-  count = length(aws_lb_target_group.health)
-
   load_balancer_arn = local.nlb_arn
   port              = var.dbx_proxy_health_port
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.health[0].arn
+    target_group_arn = aws_lb_target_group.health.arn
   }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-l-health"
+    },
+  )
 }
 
 # One target group per listener port for simple configuration.
@@ -94,4 +94,11 @@ resource "aws_lb_listener" "this" {
     type             = "forward"
     target_group_arn = each.value.arn
   }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-l-${each.key}"
+    },
+  )
 }

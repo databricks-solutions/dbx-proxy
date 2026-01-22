@@ -145,4 +145,8 @@ EOT
     }))
   }))
   default = []
+  validation {
+    condition     = alltrue([for listener in var.dbx_proxy_listener : listener.port != var.dbx_proxy_health_port])
+    error_message = "dbx_proxy_health_port must not overlap with any dbx_proxy_listener port."
+  }
 }
