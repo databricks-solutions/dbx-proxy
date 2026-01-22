@@ -11,6 +11,12 @@ resource "aws_lb" "this" {
   enable_cross_zone_load_balancing = true
   enable_deletion_protection = false
 
+  # PrivateLink traffic bypasses NLB SG ingress when this is off. We use off
+  # because the service owner cannot restrict ingress by endpoint SG/CIDR without
+  # consumer-provided details; access is instead controlled via endpoint service
+  # allowed_principals and manual acceptance.
+  enforce_security_group_inbound_rules_on_private_link_traffic = "off"
+
   tags = var.tags
 }
 
@@ -41,6 +47,11 @@ resource "aws_security_group" "this" {
     protocol    = "tcp"
     cidr_blocks = var.subnet_cidrs
   }
+
+  # We can not lock down ingress to individual sources since we don't know the
+  # source IP addresses or Security Group IDs the traffic is originating from.
+  # Therefore, we allow all ingress traffic on the SG level. Ingress is controlled
+  # by the endpoint service allowed_principals and manual acceptance.
 
   tags = merge(
     var.tags,
