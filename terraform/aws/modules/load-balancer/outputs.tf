@@ -16,6 +16,11 @@ output "nlb_target_group_arns" {
   )
 }
 
+output "nlb_security_group_ids" {
+  description = "Security group IDs attached to the NLB (if any)."
+  value       = tolist(local.nlb_security_group_ids)
+}
+
 output "vpc_endpoint_service_arn" {
   description = "ARN of the VPC endpoint service if created; otherwise null."
   value       = length(aws_vpc_endpoint_service.this) > 0 ? aws_vpc_endpoint_service.this[0].arn : null

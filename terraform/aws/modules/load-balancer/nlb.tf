@@ -6,6 +6,7 @@ resource "aws_lb" "this" {
   load_balancer_type = "network"
   internal           = true
   subnets            = var.subnet_ids
+  security_groups    = [aws_security_group.this[0].id]
 
   enable_cross_zone_load_balancing = true
   enable_deletion_protection = false
@@ -13,8 +14,44 @@ resource "aws_lb" "this" {
   tags = var.tags
 }
 
+resource "aws_security_group" "this" {
+  count = var.bootstrap_load_balancer ? 1 : 0
+
+  name        = "${var.prefix}-nlb-sg"
+  description = "Security group for dbx-proxy NLB"
+  vpc_id      = var.vpc_id
+
+  # Outbound from NLB on any listener port
+  dynamic "egress" {
+    for_each = { for l in var.dbx_proxy_listener : l.name => l }
+    content {
+      description = "Databricks to NLB to dbx-proxy listener ${egress.key}"
+      from_port   = egress.value.port
+      to_port     = egress.value.port
+      protocol    = "tcp"
+      cidr_blocks = var.subnet_cidrs
+    }
+  }
+
+  # Health check port
+  egress {
+    description = "Databricks to NLB to dbx-proxy health check"
+    from_port   = var.dbx_proxy_health_port
+    to_port     = var.dbx_proxy_health_port
+    protocol    = "tcp"
+    cidr_blocks = var.subnet_cidrs
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-nlb-sg"
+    },
+  )
+}
+
 resource "aws_vpc_security_group_egress_rule" "this" {
-  count = local.nlb_has_security_groups ? length(local.nlb_sg_egress_rules) : 0
+  count = var.bootstrap_load_balancer ? 0 : length(local.nlb_sg_egress_rules)
 
   security_group_id = local.nlb_sg_egress_rules[count.index].security_group_id
   from_port         = local.nlb_sg_egress_rules[count.index].port
