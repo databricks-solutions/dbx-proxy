@@ -12,8 +12,13 @@ output "nlb_target_group_arns" {
   description = "ARNs of the NLB target groups, keyed by listener name (plus health when created)."
   value = merge(
     { for name, tg in aws_lb_target_group.this : name => tg.arn },
-    length(aws_lb_target_group.health) > 0 ? { health = aws_lb_target_group.health[0].arn } : {},
+    { health = aws_lb_target_group.health.arn },
   )
+}
+
+output "nlb_security_group_ids" {
+  description = "Security group IDs attached to the NLB (if any)."
+  value       = tolist(local.nlb_security_group_ids)
 }
 
 output "vpc_endpoint_service_arn" {

@@ -17,6 +17,7 @@ output "load_balancer" {
     nlb_arn                   = module.load_balancer.nlb_arn
     nlb_dns_name              = module.load_balancer.nlb_dns_name
     nlb_target_group_arns     = module.load_balancer.nlb_target_group_arns
+    nlb_security_group_ids    = module.load_balancer.nlb_security_group_ids
     vpc_endpoint_service_arn  = module.load_balancer.vpc_endpoint_service_arn
     vpc_endpoint_service_name = module.load_balancer.vpc_endpoint_service_name
   }

@@ -283,3 +283,9 @@ This module is intentionally minimal right now. The following limitations are im
   - Databricks enforces limits around NCCs, private endpoints, and private endpoint rules (including limits on the number of domain names per rule).
   - Treat these as **external constraints** that influence how you model `dbx_proxy_listener`.
   - Reference: [Configure private connectivity to resources in your VPC](https://docs.databricks.com/aws/en/security/network/serverless-network-security/pl-to-internal-network).
+
+- **PrivateLink NLB SG ingress enforcement**
+  - Currently, if bootstrapped, the NLB gets created with a dedicated Security Group attached, which would allow to control ingress to the NLB, enforced with `enforce_security_group_inbound_rules_on_private_link_traffic = on`.
+  - The above setting would also allow to see individual client-IPs as source in network packets (which would be favorable in general)
+  - However, we are not able to lock-down the inbound rules on the NLB Security Group due to missing information like Security Group ID or VPC endpoint ID of the consumer side (Databricks Serverless).
+  - Therefore, we are using `enforce_security_group_inbound_rules_on_private_link_traffic = on`, which bypasses the Security Group inbound rules, and solely rely on the endpoint service `allowed_principals` and manual acceptance to control inbound traffic to the NLB.
