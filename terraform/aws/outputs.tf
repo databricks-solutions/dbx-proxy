@@ -2,6 +2,7 @@ output "networking" {
   description = "All networking outputs: vpc_id, subnet_ids, subnet_cidrs, internet_gateway_id, nat_gateway_id, nat_subnet_id, nat_subnet_cidr."
   value = {
     vpc_id              = module.networking.vpc_id
+    vpc_cidr            = module.networking.vpc_cidr
     subnet_ids          = module.networking.subnet_ids
     subnet_cidrs        = module.networking.subnet_cidrs
     nat_gateway_id      = module.networking.nat_gateway_id

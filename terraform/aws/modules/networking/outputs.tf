@@ -3,6 +3,11 @@ output "vpc_id" {
   value       = local.vpc_id
 }
 
+output "vpc_cidr" {
+  description = "VPC CIDR block used by the deployment (created or existing)."
+  value       = var.vpc_cidr
+}
+
 output "subnet_ids" {
   description = "Subnet IDs used by the deployment (created or existing)."
   value       = local.subnet_ids

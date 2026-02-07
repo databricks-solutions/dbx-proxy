@@ -1,7 +1,6 @@
 locals {
-
-  dbx_proxy_max_connections_by_cpu = data.aws_ec2_instance_type.this.default_vcpus * 4000    # assumes rather conservative 4000 connections per vCPU
-  dbx_proxy_max_connections_by_mem = floor(data.aws_ec2_instance_type.this.memory_size * 50) # assumes 1MiB / 50 ~= 20 KB per connection
+  dbx_proxy_max_connections_by_cpu = 2 * 4000         # assumes rather conservative 4000 connections per vCPU
+  dbx_proxy_max_connections_by_mem = floor(4096 * 50) # assumes 1MiB / 50 ~= 20 KB per connection
   dbx_proxy_max_connections = var.dbx_proxy_max_connections != null ? var.dbx_proxy_max_connections : max(
     2000,
     min(local.dbx_proxy_max_connections_by_cpu, local.dbx_proxy_max_connections_by_mem),

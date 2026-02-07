@@ -2,7 +2,6 @@ locals {
 
   nlb_arn      = var.bootstrap_load_balancer ? aws_lb.this[0].arn : data.aws_lb.this[0].arn
   nlb_dns_name = var.bootstrap_load_balancer ? aws_lb.this[0].dns_name : data.aws_lb.this[0].dns_name
-  nlb_zone_id  = var.bootstrap_load_balancer ? aws_lb.this[0].zone_id : data.aws_lb.this[0].zone_id
 
   nlb_security_group_ids = var.bootstrap_load_balancer ? aws_lb.this[0].security_groups : data.aws_lb.this[0].security_groups
 

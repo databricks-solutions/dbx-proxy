@@ -9,7 +9,7 @@ resource "aws_lb" "this" {
   security_groups    = [aws_security_group.this[0].id]
 
   enable_cross_zone_load_balancing = true
-  enable_deletion_protection = false
+  enable_deletion_protection       = false
 
   # PrivateLink traffic bypasses NLB SG ingress when this is off. We use off
   # because the service owner cannot restrict ingress by endpoint SG/CIDR without

@@ -20,21 +20,22 @@ Connectivity to your custom resources can be configured via a dedicated Private 
 - **Forwarding of L4 & L7 network traffic** based on your configuration
   - L4 (TCP): forwarding of plain TCP traffic, e.g. for databases
   - L7 (HTTP) forwarding of HTTP(s) traffic with **SNI-based routing**, e.g. for applications/APIS
-- **Terraform module** ready to use (currently **AWS only**)
+- **Terraform module** ready to use for **AWS and Azure**
 - No TLS termination, only passthrough!
 
 
 ### High availability
 
-`dbx-proxy` is placed behind an AWS Network Load Balancer, which spreads connections across the instances in the Auto Scaling Group. Availability depends on how many instances you run and whether your subnets span multiple AZs. See the Terraform module details for configuration and behavior: [High availability (AWS)](terraform/README.md#high-availability-aws).
+High Availability depends on how many instances you run and whether your deployment spans multiple availability zones in your cloud. See the Terraform module details for configuration and behavior: [Terraform module documentation](terraform/README.md).
 
 ### Deployment (Terraform) / How to use
 
-`dbx-proxy` essentially provides Steps 1 and 2 when following the official Databricks documentation for private connectivity to resources in your own networks:
+`dbx-proxy` provides the customer-side components (Step 1 and 2) when following the official Databricks documentation for private connectivity to resources in your own networks:
 - [(AWS) Configure private connectivity to resources in your VPC](https://docs.databricks.com/aws/en/security/network/serverless-network-security/pl-to-internal-network)
+- [(Azure) Configure private connectivity to resources in your Vnet](https://learn.microsoft.com/en-us/azure/databricks/security/network/serverless-network-security/pl-to-internal-network)
 
 
-Include the module in your Terraform stack:
+Include the module in your Terraform stack (example for AWS):
 ```hcl
 module "dbx_proxy" {
 
@@ -69,15 +70,15 @@ module "dbx_proxy" {
 }
 ```
 
-More details about the Terraform module and configurations can be found [here](terraform/README.md).
+More details about the Terraform module (including Azure) can be found [here](terraform/README.md).
 
 You will still need to configure the Databricks-side objects like NCC, private endpoint rules and accept the connection on your endpoint-service.
 
-By default the module runs in `deployment_mode = "bootstrap"` and can create networking, NLB + endpoint service. If you already have a VPC/subnets, keep `deployment_mode = "bootstrap"` and provide `vpc_id` and `subnet_ids`. If you already have an NLB as well, set `deployment_mode = "proxy-only"` and provide `vpc_id`, `subnet_ids`, and `nlb_arn` (see Terraform docs for details).
+By default the module runs in `deployment_mode = "bootstrap"` and can create networking, an internal load balancer (NLB/SLB), and a private endpoint service (Private Link). If you already have networking, keep `deployment_mode = "bootstrap"` and provide the network IDs. If you already have a load balancer as well, set `deployment_mode = "proxy-only"` and provide the load balancer ID/ARN (see Terraform docs for details).
 
 ### Troubleshooting
 
-To validate that the proxy is up and reachable,run the following from a serverless notebook:
+To validate that the proxy is up and reachable,run the following from e.g. a serverless notebook:
 
 ```bash
 %sh

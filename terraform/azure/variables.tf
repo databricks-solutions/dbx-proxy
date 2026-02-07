@@ -1,12 +1,18 @@
 variable "prefix" {
-  description = "Prefix for all AWS resources created by this module."
+  description = "Prefix for all Azure resources created by this module."
   type        = string
   default     = null
 }
 
-variable "region" {
+variable "location" {
   type        = string
-  description = "The AWS region to deploy to"
+  description = "Azure location to deploy to."
+}
+
+variable "resource_group" {
+  type        = string
+  description = "Resource group name. Required in proxy-only mode. If null in bootstrap mode, a new resource group is created."
+  default     = null
 }
 
 variable "tags" {
@@ -25,71 +31,69 @@ variable "deployment_mode" {
   }
   validation {
     condition = var.deployment_mode != "bootstrap" || (
-      (var.vpc_id != null && length(var.subnet_ids) > 0) ||
-      (var.vpc_id == null && length(var.subnet_cidrs) > 0)
+      (var.vnet_name != null && length(var.subnet_names) > 0) ||
+      (var.vnet_name == null && length(var.subnet_cidrs) > 0)
     )
-    error_message = "bootstrap mode requires either vpc_id and subnet_ids (to use existing networking) or vpc_cidr and subnet_cidrs (to bootstrap networking)."
+    error_message = "bootstrap mode requires either vnet_name and subnet_names (to use existing networking) or vnet_cidr andsubnet_cidrs (to bootstrap networking)."
   }
   validation {
-    condition     = var.deployment_mode != "proxy-only" || (var.vpc_id != null && length(var.subnet_ids) > 0)
-    error_message = "proxy-only mode requires vpc_id and subnet_ids (to use existing networking)."
+    condition     = var.deployment_mode != "proxy-only" || (var.vnet_name != null && length(var.subnet_names) > 0)
+    error_message = "proxy-only mode requires vnet_name and subnet_names (to use existing networking)."
   }
   validation {
-    condition     = var.deployment_mode != "proxy-only" || var.nlb_arn != null
-    error_message = "proxy-only mode requires nlb_arn (to attach listeners/target groups to an existing NLB)."
+    condition     = var.deployment_mode != "proxy-only" || var.slb_name != null
+    error_message = "proxy-only mode requires slb_name (to attach to an existing SLB)."
+  }
+  validation {
+    condition     = var.deployment_mode != "proxy-only" || var.resource_group != null
+    error_message = "proxy-only mode requires resource_group."
   }
 }
 
-variable "vpc_id" {
-  description = "ID of the VPC in which to deploy the dbx-proxy instances. If null, a new VPC will be bootstrapped."
+variable "vnet_name" {
+  description = "Name of existing VNet. If null in bootstrap mode, a new VNet is created."
   type        = string
   default     = null
   validation {
-    condition     = var.vpc_id != null || length(var.subnet_ids) == 0
-    error_message = "When vpc_id is set, subnet_ids must also be provided."
+    condition     = var.vnet_name != null || length(var.subnet_names) == 0
+    error_message = "When vnet_name is set, subnet_names must also be provided."
   }
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC when bootstrapping a VPC."
+variable "vnet_cidr" {
+  description = "CIDR block for the VNet when bootstrapping."
   type        = string
   default     = "10.0.0.0/16"
 }
 
-variable "subnet_ids" {
-  description = "List of subnet IDs for the dbx-proxy instance and NLB. If empty, new subnets will be created."
+variable "subnet_names" {
+  description = "Names of existing subnets. If empty in bootstrap mode, new subnets are created."
   type        = list(string)
   default     = []
 }
 
 variable "subnet_cidrs" {
-  description = "CIDR blocks for subnets when bootstrapping a VPC."
+  description = "CIDR blocks for subnets when bootstrapping."
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
-variable "nat_subnet_cidr" {
-  description = "CIDR block for the public subnet used by the NAT gateway when creating a VPC."
-  type        = string
-  default     = "10.0.0.0/24"
-}
-
 variable "enable_nat_gateway" {
-  description = "Whether to create an Internet Gateway and NAT Gateway for outbound internet connectivity when creating a new VPC."
+  description = "Whether to create a NAT Gateway for outbound internet connectivity when bootstrapping."
   type        = bool
   default     = true
 }
 
-variable "nlb_arn" {
-  description = "Existing Network Load Balancer ARN to attach listeners/target groups to in proxy-only mode."
+variable "slb_name" {
+  description = "Existing Standard Load Balancer name. Required in proxy-only mode."
   type        = string
   default     = null
 }
 
 variable "instance_type" {
-  description = "EC2 instance type for dbx-proxy instances."
+  description = "Azure VM size for dbx-proxy instances."
   type        = string
-  default     = "t4g.medium"
+  default     = "Standard_D2ps_v5"
 }
 
 variable "min_capacity" {
