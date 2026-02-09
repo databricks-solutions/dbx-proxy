@@ -43,16 +43,10 @@ After apply, use the output `load_balancer.vpc_endpoint_service_name` when creat
 | Variable | Type | Default | Description |
 |---|---:|---:|---|
 | `region` | `string` | (required) | AWS region to deploy to. |
-| `prefix` | `string` | `null` | Optional naming prefix. A randomized suffix is always appended to avoid collisions. |
-| `tags` | `map(string)` | `{}` | Extra tags applied to AWS resources (also used as provider default tags). |
-| `instance_type` | `string` | `"t4g.medium"` | EC2 instance type for proxy instances. |
-| `min_capacity` | `number` | `1` | Minimum number of dbx-proxy instances. |
-| `max_capacity` | `number` | `1` | Maximum number of dbx-proxy instances. |
 | `vpc_id` | `string` | `null` | Existing VPC ID. Required for `proxy-only` mode. If `null`, a VPC can be bootstrapped in `bootstrap` mode. |
 | `subnet_ids` | `list(string)` | `[]` | Existing private subnet IDs for the NLB + ASG. Required for `proxy-only` mode. If empty, subnets can be created in `bootstrap` mode. |
 | `vpc_cidr` | `string` | `"10.0.0.0/16"` | VPC CIDR (only used when creating a VPC in `bootstrap`). |
 | `subnet_cidrs` | `list(string)` | `["10.0.1.0/24", "10.0.2.0/24"]` | Private subnet CIDRs (only used when creating subnets in `bootstrap` mode). |
-| `enable_nat_gateway` | `bool` | `true` | Whether to create IGW + NAT for outbound internet access (only when creating networking in `bootstrap` mode). |
 | `nat_subnet_cidr` | `string` | `"10.0.0.0/24"` | Public subnet CIDR for the NAT gateway (only used when creating networking in `bootstrap` mode). |
 | `nlb_arn` | `string` | `null` | Existing NLB ARN to attach listeners/target groups to in `proxy-only` mode. |
 
@@ -93,4 +87,4 @@ Common variables are documented in `terraform/README.md`.
 ---
 ### Notes for AWS users
 
-- Multi-Aavailability-Zone resilience can be achieved by providing subnets across multiple availability-zones. By default, the autoscaling-group tries to spread dbx-proxy instances across subnets eavenly. In `proxy-only` mode, you are responsible to configure subnets accordingly. In `bootstrap` mode, default subnets are created across multiple availaiblity-zones in the selected region.
+- Multi availability-zone resilience can be achieved by providing subnets across multiple availability-zones. By default, the autoscaling-group tries to spread dbx-proxy instances across subnets eavenly. In `proxy-only` mode, you are responsible to configure subnets accordingly. In `bootstrap` mode, default subnets are created across multiple availaiblity-zones in the selected region.

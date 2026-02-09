@@ -6,13 +6,10 @@ resource "azurerm_lb" "this" {
   resource_group_name = var.resource_group
   sku                 = "Standard"
 
-  dynamic "frontend_ip_configuration" {
-    for_each = { for idx, subnet_id in var.subnet_ids : idx => subnet_id }
-    content {
-      name                          = "${var.prefix}-slb-fip-${var.subnet_names[frontend_ip_configuration.key]}"
-      subnet_id                     = frontend_ip_configuration.value
-      private_ip_address_allocation = "Dynamic"
-    }
+  frontend_ip_configuration {
+    name                          = "${var.prefix}-slb-fip-${var.subnet_name}"
+    subnet_id                     = var.subnet_id
+    private_ip_address_allocation = "Dynamic"
   }
 
   tags = var.tags

@@ -18,10 +18,10 @@ resource "azurerm_network_security_group" "this" {
       direction                    = "Inbound"
       access                       = "Allow"
       protocol                     = "Tcp"
-      source_port_range            = tostring(security_rule.value.port)
+      source_port_range            = "*"
       destination_port_range       = tostring(security_rule.value.port)
-      source_address_prefixes      = var.subnet_cidrs
-      destination_address_prefixes = var.subnet_cidrs
+      source_address_prefix        = var.subnet_cidr
+      destination_address_prefix   = var.subnet_cidr
     }
   }
 
@@ -32,10 +32,10 @@ resource "azurerm_network_security_group" "this" {
     direction                    = "Inbound"
     access                       = "Allow"
     protocol                     = "Tcp"
-    source_port_range            = tostring(var.dbx_proxy_health_port)
+    source_port_range            = "*"
     destination_port_range       = tostring(var.dbx_proxy_health_port)
-    source_address_prefixes      = var.subnet_cidrs
-    destination_address_prefixes = var.subnet_cidrs
+    source_address_prefix        = "AzureLoadBalancer"
+    destination_address_prefix   = var.subnet_cidr
   }
 
   security_rule {
@@ -47,7 +47,7 @@ resource "azurerm_network_security_group" "this" {
     protocol                     = "*"
     source_port_range            = "*"
     destination_port_range       = "*"
-    source_address_prefixes      = var.subnet_cidrs
+    source_address_prefix        = var.subnet_cidr
     destination_address_prefixes = ["0.0.0.0/0"]
   }
 
@@ -55,11 +55,12 @@ resource "azurerm_network_security_group" "this" {
 }
 
 resource "azurerm_linux_virtual_machine_scale_set" "this" {
-  name                = "${var.prefix}-vmss"
-  location            = var.location
-  resource_group_name = var.resource_group
-  sku                 = var.instance_type
-  instances           = var.max_capacity
+  name                 = "${var.prefix}-vmss"
+  location             = var.location
+  resource_group_name  = var.resource_group
+  sku                  = var.instance_type
+  instances            = var.min_capacity
+  computer_name_prefix = "${var.prefix}-vm-"
 
   admin_username                  = "dbxproxyadmin"
   disable_password_authentication = true
@@ -81,17 +82,25 @@ resource "azurerm_linux_virtual_machine_scale_set" "this" {
     max_unhealthy_instance_percent          = var.max_capacity == 1 ? 100 : 50
     max_unhealthy_upgraded_instance_percent = var.max_capacity == 1 ? 100 : 50
     pause_time_between_batches              = "PT1M"
+    cross_zone_upgrades_enabled             = false
+    prioritize_unhealthy_instances_enabled  = true
   }
 
   automatic_instance_repair {
+    action       = "Replace"
     enabled      = true
     grace_period = "PT10M"
   }
 
+  scale_in {
+    force_deletion_enabled = true
+    rule                   = "Default"
+  }
+
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
+    publisher = "canonical"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server-arm64"
     version   = "latest"
   }
 
@@ -105,14 +114,31 @@ resource "azurerm_linux_virtual_machine_scale_set" "this" {
     primary                   = true
     network_security_group_id = azurerm_network_security_group.this.id
 
-    dynamic "ip_configuration" {
-      for_each = { for idx, subnet_id in var.subnet_ids : idx => subnet_id }
-      content {
-        name                                   = "${var.prefix}-ipc-${var.subnet_names[ip_configuration.key]}"
-        primary                                = ip_configuration.key == 0 ? true : false
-        subnet_id                              = ip_configuration.value
-        load_balancer_backend_address_pool_ids = [var.slb_backend_pool_id]
-      }
+    ip_configuration {
+      name                                   = "${var.prefix}-ipc-${var.subnet_name}"
+      primary                                = true
+      subnet_id                              = var.subnet_id
+      load_balancer_backend_address_pool_ids = [var.slb_backend_pool_id]
+    }
+  }
+
+  tags = var.tags
+}
+
+resource "azurerm_monitor_autoscale_setting" "this" {
+  name                = "${var.prefix}-vmss-as"
+  location            = var.location
+  resource_group_name = var.resource_group
+  target_resource_id  = azurerm_linux_virtual_machine_scale_set.this.id
+  enabled             = true
+
+  profile {
+    name = "defaultProfile"
+
+    capacity {
+      default = var.max_capacity
+      minimum = var.min_capacity
+      maximum = var.max_capacity
     }
   }
 

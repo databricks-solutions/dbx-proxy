@@ -28,14 +28,14 @@ variable "slb_name" {
   type        = string
 }
 
-variable "subnet_ids" {
-  description = "Subnet IDs for the Load Balancer frontend and Private Link Service."
-  type        = list(string)
+variable "subnet_id" {
+  description = "Subnet ID for the Load Balancer frontend and Private Link Service."
+  type        = string
 }
 
-variable "subnet_names" {
-  description = "Subnet names for the Load Balancer frontend and Private Link Service."
-  type        = list(string)
+variable "subnet_name" {
+  description = "Subnet name for the Load Balancer frontend and Private Link Service."
+  type        = string
 }
 
 variable "dbx_proxy_health_port" {

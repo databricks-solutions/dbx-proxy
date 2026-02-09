@@ -8,19 +8,19 @@ output "vnet_cidr" {
   value       = var.vnet_cidr
 }
 
-output "subnet_names" {
-  description = "Subnet names used by the deployment (created or existing)."
-  value       = local.subnet_names
+output "subnet_name" {
+  description = "Subnet name used by the deployment (created or existing)."
+  value       = local.subnet_name
 }
 
-output "subnet_ids" {
-  description = "Subnet IDs used by the deployment (created or existing)."
-  value       = local.subnet_ids
+output "subnet_id" {
+  description = "Subnet ID used by the deployment (created or existing)."
+  value       = local.subnet_id
 }
 
-output "subnet_cidrs" {
-  description = "Subnet CIDR blocks used by the deployment (created or existing)."
-  value       = local.subnet_cidrs
+output "subnet_cidr" {
+  description = "Subnet CIDR block used by the deployment (created or existing)."
+  value       = local.subnet_cidr
 }
 
 output "nat_gateway_name" {

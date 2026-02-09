@@ -1,6 +1,6 @@
 data "azurerm_subnet" "this" {
-  for_each             = { for idx, name in var.subnet_names : tostring(idx) => name }
-  name                 = each.value
+  count                = var.bootstrap_networking ? 0 : 1
+  name                 = var.subnet_name
   resource_group_name  = var.resource_group
   virtual_network_name = var.vnet_name
 }

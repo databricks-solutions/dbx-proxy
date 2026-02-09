@@ -119,7 +119,7 @@ resource "aws_autoscaling_group" "this" {
   min_size                  = var.min_capacity
   desired_capacity          = var.max_capacity
   max_size                  = var.max_capacity
-  health_check_type         = "EC2"
+  health_check_type         = "ELB"
   health_check_grace_period = 60
 
   launch_template {

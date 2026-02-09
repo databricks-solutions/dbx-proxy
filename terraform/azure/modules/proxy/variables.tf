@@ -18,19 +18,19 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "subnet_names" {
-  description = "Subnet names for the VM scale set."
-  type        = list(string)
+variable "subnet_name" {
+  description = "Subnet name for the VM scale set."
+  type        = string
 }
 
-variable "subnet_ids" {
-  description = "Subnet IDs for the VM scale set."
-  type        = list(string)
+variable "subnet_id" {
+  description = "Subnet ID for the VM scale set."
+  type        = string
 }
 
-variable "subnet_cidrs" {
-  description = "Subnet CIDR blocks used for Network Security Group ingress."
-  type        = list(string)
+variable "subnet_cidr" {
+  description = "Subnet CIDR block used for Network Security Group ingress."
+  type        = string
 }
 
 variable "slb_backend_pool_id" {

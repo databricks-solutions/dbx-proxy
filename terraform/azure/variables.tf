@@ -31,14 +31,14 @@ variable "deployment_mode" {
   }
   validation {
     condition = var.deployment_mode != "bootstrap" || (
-      (var.vnet_name != null && length(var.subnet_names) > 0) ||
-      (var.vnet_name == null && length(var.subnet_cidrs) > 0)
+      (var.vnet_name != null && var.subnet_name != null) ||
+      (var.vnet_name == null && var.subnet_cidr != null)
     )
-    error_message = "bootstrap mode requires either vnet_name and subnet_names (to use existing networking) or vnet_cidr andsubnet_cidrs (to bootstrap networking)."
+    error_message = "bootstrap mode requires either vnet_name and subnet_name (to use existing networking) or vnet_cidr and subnet_cidr (to bootstrap networking)."
   }
   validation {
-    condition     = var.deployment_mode != "proxy-only" || (var.vnet_name != null && length(var.subnet_names) > 0)
-    error_message = "proxy-only mode requires vnet_name and subnet_names (to use existing networking)."
+    condition     = var.deployment_mode != "proxy-only" || (var.vnet_name != null && var.subnet_name != null)
+    error_message = "proxy-only mode requires vnet_name and subnet_name (to use existing networking)."
   }
   validation {
     condition     = var.deployment_mode != "proxy-only" || var.slb_name != null
@@ -55,8 +55,8 @@ variable "vnet_name" {
   type        = string
   default     = null
   validation {
-    condition     = var.vnet_name != null || length(var.subnet_names) == 0
-    error_message = "When vnet_name is set, subnet_names must also be provided."
+    condition     = var.vnet_name == null || var.subnet_name != null
+    error_message = "When vnet_name is set, subnet_name must also be provided."
   }
 }
 
@@ -66,16 +66,16 @@ variable "vnet_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "subnet_names" {
-  description = "Names of existing subnets. If empty in bootstrap mode, new subnets are created."
-  type        = list(string)
-  default     = []
+variable "subnet_name" {
+  description = "Name of existing subnet. If null in bootstrap mode, a new subnet is created."
+  type        = string
+  default     = null
 }
 
-variable "subnet_cidrs" {
-  description = "CIDR blocks for subnets when bootstrapping."
-  type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
+variable "subnet_cidr" {
+  description = "CIDR block for subnet when bootstrapping."
+  type        = string
+  default     = "10.0.1.0/24"
 }
 
 variable "enable_nat_gateway" {
@@ -93,7 +93,7 @@ variable "slb_name" {
 variable "instance_type" {
   description = "Azure VM size for dbx-proxy instances."
   type        = string
-  default     = "Standard_D2ps_v5"
+  default     = "Standard_D2ps_v6"
 }
 
 variable "min_capacity" {

@@ -25,8 +25,8 @@ module "networking" {
   vnet_name = var.vnet_name
   vnet_cidr = var.vnet_cidr
 
-  subnet_names = var.subnet_names
-  subnet_cidrs = var.subnet_cidrs
+  subnet_name = var.subnet_name
+  subnet_cidr = var.subnet_cidr
 
   enable_nat_gateway = var.enable_nat_gateway
 }
@@ -41,9 +41,9 @@ module "load_balancer" {
   resource_group = local.resource_group
   tags           = local.tags
 
-  slb_name     = var.slb_name
-  subnet_names = local.subnet_names
-  subnet_ids   = local.subnet_ids
+  slb_name    = var.slb_name
+  subnet_name = local.subnet_name
+  subnet_id   = local.subnet_id
 
   dbx_proxy_health_port = var.dbx_proxy_health_port
   dbx_proxy_listener    = var.dbx_proxy_listener
@@ -52,14 +52,16 @@ module "load_balancer" {
 module "proxy" {
   source = "./modules/proxy"
 
+  depends_on = [module.load_balancer]
+
   prefix         = local.prefix
   location       = var.location
   resource_group = local.resource_group
   tags           = local.tags
 
-  subnet_names        = local.subnet_names
-  subnet_ids          = local.subnet_ids
-  subnet_cidrs        = local.subnet_cidrs
+  subnet_name         = local.subnet_name
+  subnet_id           = local.subnet_id
+  subnet_cidr         = local.subnet_cidr
   slb_backend_pool_id = local.slb_backend_pool_id
   slb_health_probe_id = local.slb_health_probe_id
 

@@ -4,13 +4,13 @@ output "resource_group" {
 }
 
 output "networking" {
-  description = "All networking outputs: vnet_name, vnet_cidr, subnet_names, subnet_ids, subnet_cidrs, nat_gateway_name, nat_gateway_id."
+  description = "All networking outputs: vnet_name, vnet_cidr, subnet_name, subnet_id, subnet_cidr, nat_gateway_name, nat_gateway_id."
   value = {
     vnet_name        = module.networking.vnet_name
     vnet_cidr        = module.networking.vnet_cidr
-    subnet_names     = module.networking.subnet_names
-    subnet_ids       = module.networking.subnet_ids
-    subnet_cidrs     = module.networking.subnet_cidrs
+    subnet_name      = module.networking.subnet_name
+    subnet_id        = module.networking.subnet_id
+    subnet_cidr      = module.networking.subnet_cidr
     nat_gateway_name = module.networking.nat_gateway_name
     nat_gateway_id   = module.networking.nat_gateway_id
   }

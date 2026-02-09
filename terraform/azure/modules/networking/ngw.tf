@@ -26,7 +26,7 @@ resource "azurerm_nat_gateway_public_ip_association" "this" {
 }
 
 resource "azurerm_subnet_nat_gateway_association" "this" {
-  for_each       = var.bootstrap_networking && var.enable_nat_gateway ? { for id in local.subnet_ids : id => id } : {}
-  subnet_id      = each.value
+  count          = var.bootstrap_networking && var.enable_nat_gateway ? 1 : 0
+  subnet_id      = local.subnet_id
   nat_gateway_id = azurerm_nat_gateway.this[0].id
 }

@@ -9,7 +9,7 @@ resource "azurerm_private_link_service" "this" {
   nat_ip_configuration {
     name                       = "${var.prefix}-pls-nat"
     primary                    = true
-    subnet_id                  = var.subnet_ids[0]
+    subnet_id                  = var.subnet_id
     private_ip_address_version = "IPv4"
   }
 

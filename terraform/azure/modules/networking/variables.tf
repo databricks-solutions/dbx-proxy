@@ -33,14 +33,14 @@ variable "vnet_cidr" {
   type        = string
 }
 
-variable "subnet_names" {
-  description = "Names of existing subnets. Used when not bootstrapping."
-  type        = list(string)
+variable "subnet_name" {
+  description = "Name of existing subnet. Used when not bootstrapping."
+  type        = string
 }
 
-variable "subnet_cidrs" {
-  description = "CIDR blocks for subnets when bootstrapping."
-  type        = list(string)
+variable "subnet_cidr" {
+  description = "CIDR block for subnet when bootstrapping."
+  type        = string
 }
 
 variable "enable_nat_gateway" {

@@ -10,7 +10,7 @@ locals {
   )
 
   bootstrap_resource_group = var.deployment_mode == "bootstrap" && var.resource_group == null
-  bootstrap_networking     = var.deployment_mode == "bootstrap" && (var.vnet_name == null && length(var.subnet_names) == 0)
+  bootstrap_networking     = var.deployment_mode == "bootstrap" && (var.vnet_name == null && var.subnet_name == null)
   bootstrap_load_balancer  = var.deployment_mode == "bootstrap"
 
   resource_group = (
@@ -19,9 +19,9 @@ locals {
     : data.azurerm_resource_group.this[0].name
   )
 
-  subnet_names = module.networking.subnet_names
-  subnet_ids   = module.networking.subnet_ids
-  subnet_cidrs = module.networking.subnet_cidrs
+  subnet_name = module.networking.subnet_name
+  subnet_id   = module.networking.subnet_id
+  subnet_cidr = module.networking.subnet_cidr
 
   slb_backend_pool_id = module.load_balancer.slb_backend_pool_id
   slb_health_probe_id = module.load_balancer.slb_health_probe_id

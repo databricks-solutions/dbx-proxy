@@ -17,7 +17,7 @@ The module supports two modes:
 
 - **`bootstrap`** (default)
   - Creates and configures an internal load balancer, a private endpoint service and the proxy compute.
-  - If networking (VPC/Vnet & subnets **are provided, the module uses existing networking.
+  - If networking (VPC/Vnet & subnets **are provided**, the module uses existing networking.
   - If network IDs are **not provided**, the module creates the necessary networking resources.
 
 - **`proxy-only`**
@@ -32,11 +32,17 @@ These variables define overall configuration of dbx-proxy:
 
 | Variable | Type | Default | Description |
 |---|---:|---:|---|
-| `dbx_proxy_image_version` | `string` | `"0.1.1"` | Docker image tag/version of `dbx-proxy` to deploy. |
+| `deployment_mode` | `string` | `"bootstrap"` | Controls whether the module bootstraps networking/load balancer (`bootstrap`) or attaches to existing infrastructure (`proxy-only`). |
+| `prefix` | `string` | `null` | Optional naming prefix. A randomized suffix is always appended. |
+| `tags` | `map(string)` | `{}` | Extra tags applied to Azure resources. |
+| `instance_type` | `string` | Azure: `"Standard_D2ps_v6"`, AWS: `"t4g.medium"` | VM size for proxy instances. |
+| `min_capacity` | `number` | `1` | Minimum number of dbx-proxy instances. |
+| `max_capacity` | `number` | `1` | Maximum number of dbx-proxy instances. |
+| `enable_nat_gateway` | `bool` | `true` | Whether to create IGW + NAT for outbound internet access (only when creating networking in `bootstrap` mode). |
+| `dbx_proxy_image_version` | `string` | `"0.1.5"` | Docker image tag/version of `dbx-proxy` to deploy. |
 | `dbx_proxy_health_port` | `number` | `8080` | Health port exposed by `dbx-proxy` (HTTP `GET /status`). Also used for load balancer health checks. |
 | `dbx_proxy_max_connections` | `number` | `null` | Optional HAProxy `maxconn` override. If unset, the module derives a value from vCPU and memory of the selected instance type (see cloud specific input variables). |
 | `dbx_proxy_listener` | `list(object)` | `[]` | Listener configuration (ports/modes/routes/destinations). See **Listener configuration** below. |
-| `deployment_mode` | `string` | `"bootstrap"` | Controls whether the module bootstraps networking/load balancer (`bootstrap`) or attaches to existing infrastructure (`proxy-only`). |
 
 Cloud-specific variables are documented for each module individually.
 
@@ -154,7 +160,7 @@ dbx_proxy_listener = [
 ]
 ```
 
-With your NCC configured accordingly, the above sample configuration woulld allow you to connect from Databricks serverless compute to application "app-b" using domain "app-b.application.domain" and port 443:
+With your NCC configured accordingly, the above sample configuration would allow you to connect from Databricks serverless compute to application "app-b" using domain "app-b.application.domain" and port 443:
 ```bash
 %sh
 

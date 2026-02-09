@@ -45,15 +45,10 @@ After apply, use the output `load_balancer.private_link_service_alias` when crea
 |---|---:|---:|---|
 | `location` | `string` | (required) | Azure region to deploy to. |
 | `resource_group` | `string` | `null` | Resource group name. Required in `proxy-only` mode. If `null` in `bootstrap`, a new one is created. |
-| `prefix` | `string` | `null` | Optional naming prefix. A randomized suffix is always appended. |
-| `tags` | `map(string)` | `{}` | Extra tags applied to Azure resources. |
-| `instance_type` | `string` | `"Standard_D2s_v5"` | VM size for proxy instances. |
-| `min_capacity` | `number` | `1` | Minimum number of dbx-proxy instances. |
-| `max_capacity` | `number` | `1` | Maximum number of dbx-proxy instances. |
 | `vnet_name` | `string` | `null` | Existing VNet name. If `null` in `bootstrap`, a new VNet is created. |
-| `subnet_names` | `list(string)` | `[]` | Existing subnet names. If empty in `bootstrap`, new subnets are created. |
+| `subnet_name` | `string` | `null` | Existing subnet name. If empty in `bootstrap`, a new subnet is created. |
 | `vnet_cidr` | `string` | `"10.0.0.0/16"` | VNet CIDR (only used when bootstrapping). |
-| `subnet_cidrs` | `list(string)` | `["10.0.1.0/24", "10.0.2.0/24"]` | Subnet CIDRs (only used when bootstrapping). |
+| `subnet_cidr` | `string` | `"10.0.1.0/24"` | Subnet CIDR (only used when bootstrapping). |
 | `enable_nat_gateway` | `bool` | `true` | Whether to create a NAT Gateway (only when bootstrapping). |
 | `slb_name` | `string` | `null` | Existing Load Balancer name. Required in `proxy-only` mode. |
 
@@ -68,8 +63,9 @@ Common variables are documented in `terraform/README.md`.
 - `networking`: object with
   - `vnet_name`
   - `vnet_cidr`
-  - `subnet_names`
-  - `subnet_cidrs`
+  - `subnet_id`
+  - `subnet_name`
+  - `subnet_cidr`
   - `nat_gateway_name`
   - `nat_gateway_id`
 
@@ -91,5 +87,5 @@ Common variables are documented in `terraform/README.md`.
 ### Notes for Azure users
 
 - If `resource_group` is provided, it must already exist. If `null` in `bootstrap` mode, a new one is created.
-- The VM scale set uses a randomly generated password (not exposed) and is managed via cloud-init. No SSH access is configured.
-- The VM scale set attaches to a single subnet (the first entry). For multi-AZ resilience, use zone-aware VM sizes.
+- Multi availability-zone resilience is achieved by the virtual machine scale set balancing VMs over multiple availability zones.
+- In Azure a subnet spans multiple availability-zones, therefore a single subnet is sufficient. In `proxy-only` mode, you are responsible to provide a subnet. In `bootstrap` mode, a default subnet is created.
