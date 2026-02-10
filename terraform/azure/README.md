@@ -95,5 +95,5 @@ Common variables are documented in `terraform/README.md`.
 ### Notes for Azure users
 
 - If `resource_group` is provided, it must already exist. If `null` in `bootstrap` mode, a new one is created.
-- Multi availability-zone resilience is achieved by the virtual machine scale set balancing VMs over multiple availability zones.
+- Multi availability-zone resilience requires a zonal region and `min_capacity >= 2`; the VM scale set balances VMs over the available zones.
 - In Azure a subnet spans multiple availability-zones, therefore a single subnet is sufficient. In `proxy-only` mode, you are responsible to provide a subnet. In `bootstrap` mode, a default subnet is created.

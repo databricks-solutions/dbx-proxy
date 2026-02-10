@@ -96,4 +96,4 @@ Common variables are documented in `terraform/README.md`.
 ---
 ### Notes for AWS users
 
-- Multi availability-zone resilience can be achieved by providing subnets across multiple availability-zones. By default, the autoscaling-group tries to spread dbx-proxy instances across subnets eavenly. In `proxy-only` mode, you are responsible to configure subnets accordingly. In `bootstrap` mode, default subnets are created across multiple availaiblity-zones in the selected region.
+- Multi availability-zone resilience requires subnets in multiple availability-zones and `min_capacity >= 2`. By default, the autoscaling-group spreads dbx-proxy instances across provided subnets. In `proxy-only` mode, you are responsible to configure subnets accordingly. In `bootstrap` mode, default subnets are created across multiple availability-zones in the selected region.
