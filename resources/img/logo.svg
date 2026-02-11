@@ -14,13 +14,13 @@
   <rect x="0" y="0" width="580" height="200" rx="24" fill="url(#bg)" stroke="none"/>
 
   <g transform="translate(40,46)">
-    <rect x="0" y="22" width="108" height="64" rx="16" fill="#2A2A2A" stroke="#7A3F3F" stroke-width="2"/>
+    <rect x="0" y="22" width="108" height="64" rx="16" fill="#1B1B1B" stroke="#C98686" stroke-width="2"/>
     <path d="M20 54h26m0 0l-8-8m8 8l-8 8" fill="none" stroke="#FFD6D1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M60 54h28m0 0l-8-8m8 8l-8 8" fill="none" stroke="#FFD6D1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
     <circle cx="124" cy="54" r="10" fill="url(#accent)"/>
     <path d="M134 54h26" fill="none" stroke="#FF3621" stroke-width="5" stroke-linecap="round"/>
-    <rect x="160" y="34" width="66" height="40" rx="10" fill="#2A2A2A" stroke="#7A3F3F" stroke-width="2"/>
-    <rect x="170" y="44" width="46" height="20" rx="6" fill="#3A3A3A"/>
+    <rect x="160" y="34" width="66" height="40" rx="10" fill="#1B1B1B" stroke="#C98686" stroke-width="2"/>
+    <rect x="170" y="44" width="46" height="20" rx="6" fill="#505050"/>
   </g>
 
   <text x="415" y="100" dominant-baseline="middle" text-anchor="middle" font-family="Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="48" font-weight="550" letter-spacing="0.6" fill="#F9FAFB">dbx-proxy</text>
