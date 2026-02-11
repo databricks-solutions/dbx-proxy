@@ -1,4 +1,23 @@
-## dbx-proxy
+<p align="center">
+  <img src="resources/img/logo.svg" alt="logo" width="60%" />
+</p>
+
+<p align="center">
+  <strong>Lightweight HAProxy-based routing for private connectivity from<br/>Databricks Serverless to resources in your VPC/VNet and on-premise networks.</strong>
+</p>
+
+<div align="center">
+
+[![Databricks](https://img.shields.io/badge/databricks-000000?logo=databricks&logoColor=red)](https://www.databricks.com/)
+[![HAProxy](https://img.shields.io/badge/HAProxy-0A74B8)](https://www.haproxy.org/)
+[![Terraform](https://img.shields.io/badge/Terraform-7B42BC?logo=terraform&logoColor=white)](https://www.terraform.io/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![AWS](https://img.shields.io/badge/AWS-Supported-232F3E?logo=amazonaws&logoColor=white)](https://aws.amazon.com/)
+[![Azure](https://img.shields.io/badge/Azure-Supported-0078D4?logo=microsoftazure&logoColor=white)](https://azure.microsoft.com/)
+
+</div>
+
+---
 
 `dbx-proxy` is a lightweight **HAProxy-based load balancer** that enables **private network connectivity** from **Databricks Serverless** compute to **resources in your own VPC/VNet** (for example: databases, applications, etc).
 
