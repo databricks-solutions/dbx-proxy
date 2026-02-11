@@ -21,7 +21,7 @@ In your existing Terraform stack, add:
 
 ```hcl
 module "dbx_proxy" {
-  source = "github.com/dnks0/dbx-proxy//terraform/aws?ref=v<release>"
+  source = "github.com/databricks-solutions/dbx-proxy//terraform/aws?ref=v<release>"
 
   # AWS config
   region = "eu-central-1"

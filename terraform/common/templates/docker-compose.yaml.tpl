@@ -1,6 +1,6 @@
 services:
   dbx-proxy:
-    image: "ghcr.io/dnks0/dbx-proxy/proxy:${dbx_proxy_image_version}"
+    image: "ghcr.io/databricks-solutions/dbx-proxy/proxy:${dbx_proxy_image_version}"
     container_name: "dbx-proxy"
     cap_add:
       - NET_BIND_SERVICE
