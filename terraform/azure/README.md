@@ -20,7 +20,7 @@ In your existing Terraform stack, add:
 
 ```hcl
 module "dbx_proxy" {
-  source = "github.com/dnks0/dbx-proxy//terraform/azure?ref=v<release>"
+  source = "github.com/databricks-solutions/dbx-proxy//terraform/azure?ref=v<release>"
 
   # Azure config
   location       = "westeurope"

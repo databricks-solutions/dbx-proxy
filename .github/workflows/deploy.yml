@@ -10,7 +10,7 @@ env:
   REGISTRY: ghcr.io
   # Default namespace matches the Terraform expectations in docker/README.md.
   # Change this if you publish under a different org/user.
-  IMAGE_NAMESPACE: dnks0/dbx-proxy
+  IMAGE_NAMESPACE: databricks-solutions/dbx-proxy
   PROXY_IMAGE_NAME: proxy
 
 jobs:

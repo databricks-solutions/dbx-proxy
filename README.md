@@ -39,7 +39,7 @@ Include the module in your Terraform stack (example for AWS):
 ```hcl
 module "dbx_proxy" {
 
-  source = "github.com/dnks0/dbx-proxy//terraform/aws?ref=v<release>"
+  source = "github.com/databricks-solutions/dbx-proxy//terraform/aws?ref=v<release>"
 
   # aws config
   region    = "eu-central-1"
