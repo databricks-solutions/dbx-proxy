@@ -17,8 +17,8 @@ The module supports two modes:
 
 - **`bootstrap`** (default)
   - Creates and configures an internal load balancer, a private endpoint service and the proxy compute.
-  - If networking (VPC/Vnet & subnets **are provided**, the module uses existing networking.
-  - If network IDs are **not provided**, the module creates the necessary networking resources.
+  - If networking (VPC/VNet & subnets) **are provided** along with `resource_group`, the module uses existing networking.
+  - If networking is **not provided**, the module creates the necessary networking resources (including a new resource group if `resource_group` is `null`).
 
 - **`proxy-only`**
   - Requires existing networking, an existing load balancer and private endpoint service

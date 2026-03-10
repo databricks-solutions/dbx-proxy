@@ -11,7 +11,7 @@ variable "location" {
 
 variable "resource_group" {
   type        = string
-  description = "Resource group name. Required in proxy-only mode. If null in bootstrap mode, a new resource group is created."
+  description = "Resource group name. Required when using existing networking (vnet_name/subnet_name) or in proxy-only mode. If null in bootstrap mode, a new resource group is created."
   default     = null
 }
 
@@ -51,12 +51,16 @@ variable "deployment_mode" {
 }
 
 variable "vnet_name" {
-  description = "Name of existing VNet. If null in bootstrap mode, a new VNet is created."
+  description = "Name of existing VNet. If null in bootstrap mode, a new VNet is created. Requires resource_group to be set."
   type        = string
   default     = null
   validation {
     condition     = var.vnet_name == null || var.subnet_name != null
     error_message = "When vnet_name is set, subnet_name must also be provided."
+  }
+  validation {
+    condition     = var.vnet_name == null || var.resource_group != null
+    error_message = "When vnet_name is set, resource_group must also be provided to look up the existing VNet and subnet."
   }
 }
 
@@ -67,7 +71,7 @@ variable "vnet_cidr" {
 }
 
 variable "subnet_name" {
-  description = "Name of existing subnet. If null in bootstrap mode, a new subnet is created."
+  description = "Name of existing subnet. If null in bootstrap mode, a new subnet is created. Requires vnet_name and resource_group to be set."
   type        = string
   default     = null
 }
