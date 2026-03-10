@@ -24,7 +24,7 @@ module "dbx_proxy" {
 
   # Azure config
   location       = "westeurope"
-  resource_group = "rg-dbx-proxy"  # optional in bootstrap mode
+  resource_group = "rg-dbx-proxy"  # optional in bootstrap mode (required when using existing networking)
   tags           = {}
 
   # dbx-proxy config
@@ -52,7 +52,7 @@ After apply, use the output `load_balancer.private_link_service_alias` when crea
 | Variable | Type | Default | Description |
 |---|---:|---:|---|
 | `location` | `string` | (required) | Azure region to deploy to. |
-| `resource_group` | `string` | `null` | Resource group name. Required in `proxy-only` mode. If `null` in `bootstrap`, a new one is created. |
+| `resource_group` | `string` | `null` | Resource group name. Required when using existing networking (`vnet_name`/`subnet_name`) or in `proxy-only` mode. If `null` in `bootstrap`, a new one is created. |
 | `vnet_name` | `string` | `null` | Existing VNet name. If `null` in `bootstrap`, a new VNet is created. |
 | `subnet_name` | `string` | `null` | Existing subnet name. If empty in `bootstrap`, a new subnet is created. |
 | `vnet_cidr` | `string` | `"10.0.0.0/16"` | VNet CIDR (only used when bootstrapping). |
@@ -94,6 +94,6 @@ Common variables are documented in `terraform/README.md`.
 
 ### Notes for Azure users
 
-- If `resource_group` is provided, it must already exist. If `null` in `bootstrap` mode, a new one is created.
+- `resource_group` is required when using existing networking (`vnet_name`/`subnet_name`), as it is used to look up the VNet and subnet. If `null` in `bootstrap` mode (without existing networking), a new one is created.
 - Multi availability-zone resilience requires a zonal region and `min_capacity >= 2`; the VM scale set balances VMs over the available zones.
 - In Azure a subnet spans multiple availability-zones, therefore a single subnet is sufficient. In `proxy-only` mode, you are responsible to provide a subnet. In `bootstrap` mode, a default subnet is created.
