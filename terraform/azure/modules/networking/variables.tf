@@ -9,7 +9,12 @@ variable "location" {
 }
 
 variable "resource_group" {
-  description = "Resource group name."
+  description = "Resource group name for bootstrapped networking resources."
+  type        = string
+}
+
+variable "networking_resource_group" {
+  description = "Resource group name where the existing VNet and subnet reside. Used for data source lookups when not bootstrapping."
   type        = string
 }
 
