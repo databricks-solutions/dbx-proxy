@@ -17,10 +17,11 @@ module "networking" {
 
   bootstrap_networking = local.bootstrap_networking
 
-  prefix         = local.prefix
-  location       = var.location
-  resource_group = local.resource_group
-  tags           = local.tags
+  prefix                    = local.prefix
+  location                  = var.location
+  resource_group            = local.resource_group
+  networking_resource_group = local.networking_resource_group
+  tags                      = local.tags
 
   vnet_name = var.vnet_name
   vnet_cidr = var.vnet_cidr

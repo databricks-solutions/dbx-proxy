@@ -19,6 +19,12 @@ locals {
     : data.azurerm_resource_group.this[0].name
   )
 
+  networking_resource_group = (
+    var.networking_resource_group != null
+    ? var.networking_resource_group
+    : local.resource_group
+  )
+
   subnet_name = module.networking.subnet_name
   subnet_id   = module.networking.subnet_id
   subnet_cidr = module.networking.subnet_cidr
