@@ -28,9 +28,10 @@ module "load_balancer" {
 
   bootstrap_load_balancer = local.bootstrap_load_balancer
 
-  prefix = local.prefix
-  region = var.region
-  tags   = local.tags
+  prefix             = local.prefix
+  region             = var.region
+  tags               = local.tags
+  allowed_principals = var.allowed_principals
 
   nlb_arn = var.nlb_arn
 

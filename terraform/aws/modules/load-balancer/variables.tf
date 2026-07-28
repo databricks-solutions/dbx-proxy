@@ -8,6 +8,12 @@ variable "region" {
   type        = string
 }
 
+variable "allowed_principals" {
+  description = "IAM principal ARNs allowed to create an interface endpoint to the VPC endpoint service. When null, defaults to the AWS commercial Databricks serverless private-connectivity role for var.region."
+  type        = list(string)
+  default     = null
+}
+
 variable "tags" {
   description = "Additional tags to apply to all resources created by this module."
   type        = map(string)

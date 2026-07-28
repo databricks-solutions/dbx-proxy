@@ -58,6 +58,7 @@ After apply, use the output `load_balancer.vpc_endpoint_service_name` when creat
 | `subnet_cidrs` | `list(string)` | `["10.0.1.0/24", "10.0.2.0/24"]` | Private subnet CIDRs (only used when creating subnets in `bootstrap` mode). |
 | `nat_subnet_cidr` | `string` | `"10.0.0.0/24"` | Public subnet CIDR for the NAT gateway (only used when creating networking in `bootstrap` mode). |
 | `nlb_arn` | `string` | `null` | Existing NLB ARN to attach listeners/target groups to in `proxy-only` mode. |
+| `allowed_principals` | `list(string)` | `null` | IAM principal ARNs allowed to create an interface endpoint to the PrivateLink VPC endpoint service. When `null`, defaults to the AWS commercial Databricks serverless private-connectivity role for `region` (`arn:aws:iam::565502421330:role/private-connectivity-role-<region>`). Set explicitly for other deployments, e.g. AWS GovCloud (`arn:aws-us-gov:iam::347038500609:role/private-connectivity-role-us-gov-west-1` for Civilian, `...347034940029...` for DoD), or `["*"]` to allow any principal. |
 
 Common variables are documented in `terraform/README.md`.
 

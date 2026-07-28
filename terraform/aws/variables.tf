@@ -147,3 +147,17 @@ EOT
     error_message = "dbx_proxy_health_port must not overlap with any dbx_proxy_listener port."
   }
 }
+
+variable "allowed_principals" {
+  description = <<EOT
+IAM principal ARNs allowed to create an interface endpoint to the PrivateLink VPC endpoint service.
+When null (default), the AWS commercial Databricks serverless private-connectivity role for var.region is
+used: arn:aws:iam::565502421330:role/private-connectivity-role-<region>. Set this to target other
+deployments, for example AWS GovCloud:
+  - GovCloud (Civilian): ["arn:aws-us-gov:iam::347038500609:role/private-connectivity-role-us-gov-west-1"]
+  - GovCloud (DoD):      ["arn:aws-us-gov:iam::347034940029:role/private-connectivity-role-us-gov-west-1"]
+Use ["*"] to allow any principal.
+EOT
+  type        = list(string)
+  default     = null
+}
