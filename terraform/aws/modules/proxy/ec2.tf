@@ -61,6 +61,16 @@ resource "aws_launch_template" "this" {
   image_id      = var.ami_id != null ? var.ami_id : data.aws_ssm_parameter.al2023_ami_id.value
   instance_type = var.instance_type
 
+  # Catch an AMI/instance-type architecture mismatch at plan time rather than at instance launch.
+  # Only enforced when a custom ami_id is supplied; the default SSM AMI is arm64 to match the default
+  # Graviton instance type.
+  lifecycle {
+    precondition {
+      condition     = var.ami_id == null || contains(data.aws_ec2_instance_type.this.supported_architectures, data.aws_ami.this[0].architecture)
+      error_message = "ami_id architecture (${var.ami_id != null ? data.aws_ami.this[0].architecture : "n/a"}) is not supported by instance_type ${var.instance_type} (supported: ${join(", ", data.aws_ec2_instance_type.this.supported_architectures)}). Choose an AMI and instance type with matching architecture."
+    }
+  }
+
   vpc_security_group_ids = [aws_security_group.this.id]
 
   metadata_options {
