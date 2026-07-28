@@ -59,6 +59,8 @@ After apply, use the output `load_balancer.vpc_endpoint_service_name` when creat
 | `nat_subnet_cidr` | `string` | `"10.0.0.0/24"` | Public subnet CIDR for the NAT gateway (only used when creating networking in `bootstrap` mode). |
 | `nlb_arn` | `string` | `null` | Existing NLB ARN to attach listeners/target groups to in `proxy-only` mode. |
 | `allowed_principals` | `list(string)` | `null` | IAM principal ARNs allowed to create an interface endpoint to the PrivateLink VPC endpoint service. When `null`, defaults to the AWS commercial Databricks serverless private-connectivity role for `region` (`arn:aws:iam::565502421330:role/private-connectivity-role-<region>`). Set explicitly for other deployments, e.g. AWS GovCloud (`arn:aws-us-gov:iam::347038500609:role/private-connectivity-role-us-gov-west-1` for Civilian, `...347034940029...` for DoD), or `["*"]` to allow any principal. |
+| `ami_id` | `string` | `null` | AMI ID for dbx-proxy instances. When `null`, resolves the latest Amazon Linux 2023 arm64 AMI from SSM. Set to pin a specific image, e.g. a hardened/CIS golden AMI. Must match `instance_type`'s architecture. |
+| `max_instance_lifetime` | `number` | `0` | Maximum lifetime, in seconds, of dbx-proxy instances before the Auto Scaling group replaces them (rolling onto the current AMI). `0` disables age-based replacement; otherwise must be between `86400` (1 day) and `31536000` (1 year). Useful for periodic patching/rotation to meet compliance mandates. |
 
 Common variables are documented in `terraform/README.md`.
 
