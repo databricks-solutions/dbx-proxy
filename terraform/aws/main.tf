@@ -28,9 +28,10 @@ module "load_balancer" {
 
   bootstrap_load_balancer = local.bootstrap_load_balancer
 
-  prefix = local.prefix
-  region = var.region
-  tags   = local.tags
+  prefix             = local.prefix
+  region             = var.region
+  tags               = local.tags
+  allowed_principals = var.allowed_principals
 
   nlb_arn = var.nlb_arn
 
@@ -54,6 +55,8 @@ module "proxy" {
   subnet_cidrs = local.subnet_cidrs
 
   instance_type         = var.instance_type
+  ami_id                = var.ami_id
+  max_instance_lifetime = var.max_instance_lifetime
   min_capacity          = var.min_capacity
   max_capacity          = var.max_capacity
   nlb_target_group_arns = local.nlb_target_group_arns

@@ -20,7 +20,7 @@ locals {
     }
   ] : []
 
-  allowed_principals = [
+  allowed_principals = var.allowed_principals != null ? var.allowed_principals : [
     "arn:aws:iam::565502421330:role/private-connectivity-role-${var.region}"
   ]
 

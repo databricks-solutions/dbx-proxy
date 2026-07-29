@@ -58,8 +58,18 @@ resource "aws_iam_instance_profile" "this" {
 # Launch template for dbx-proxy instances
 resource "aws_launch_template" "this" {
   name_prefix   = "${var.prefix}-lt"
-  image_id      = data.aws_ssm_parameter.al2023_ami_id.value
+  image_id      = var.ami_id != null ? var.ami_id : data.aws_ssm_parameter.al2023_ami_id.value
   instance_type = var.instance_type
+
+  # Catch an AMI/instance-type architecture mismatch at plan time rather than at instance launch.
+  # Only enforced when a custom ami_id is supplied; the default SSM AMI is arm64 to match the default
+  # Graviton instance type.
+  lifecycle {
+    precondition {
+      condition     = alltrue([for a in data.aws_ami.this[*].architecture : contains(data.aws_ec2_instance_type.this.supported_architectures, a)])
+      error_message = "ami_id architecture is not supported by instance_type ${var.instance_type} (supported: ${join(", ", data.aws_ec2_instance_type.this.supported_architectures)}). Choose an AMI and instance type with matching architecture."
+    }
+  }
 
   vpc_security_group_ids = [aws_security_group.this.id]
 
@@ -121,6 +131,7 @@ resource "aws_autoscaling_group" "this" {
   max_size                  = var.max_capacity
   health_check_type         = "ELB"
   health_check_grace_period = 60
+  max_instance_lifetime     = var.max_instance_lifetime
 
   launch_template {
     id      = aws_launch_template.this.id

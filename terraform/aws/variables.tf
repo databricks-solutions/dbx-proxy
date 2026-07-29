@@ -87,9 +87,21 @@ variable "nlb_arn" {
 }
 
 variable "instance_type" {
-  description = "EC2 instance type for dbx-proxy instances."
+  description = "EC2 instance type for dbx-proxy instances. Must be a Graviton (arm64) type unless ami_id overrides the default arm64 AMI."
   type        = string
   default     = "t4g.medium"
+}
+
+variable "ami_id" {
+  description = "AMI ID for dbx-proxy instances. When null (default), the latest Amazon Linux 2023 arm64 AMI is resolved from SSM. Set this to pin a specific image, e.g. a hardened/CIS golden AMI (must match instance_type's architecture)."
+  type        = string
+  default     = null
+}
+
+variable "max_instance_lifetime" {
+  description = "Maximum lifetime, in seconds, of dbx-proxy instances before the Auto Scaling group replaces them (rolling onto the current AMI). 0 (default) disables age-based replacement. AWS requires 0 or a value between 86400 (1 day) and 31536000 (1 year)."
+  type        = number
+  default     = 0
 }
 
 variable "min_capacity" {
@@ -146,4 +158,18 @@ EOT
     condition     = alltrue([for listener in var.dbx_proxy_listener : listener.port != var.dbx_proxy_health_port])
     error_message = "dbx_proxy_health_port must not overlap with any dbx_proxy_listener port."
   }
+}
+
+variable "allowed_principals" {
+  description = <<EOT
+IAM principal ARNs allowed to create an interface endpoint to the PrivateLink VPC endpoint service.
+When null (default), the AWS commercial Databricks serverless private-connectivity role for var.region is
+used: arn:aws:iam::565502421330:role/private-connectivity-role-<region>. Set this to target other
+deployments, for example AWS GovCloud:
+  - GovCloud (Civilian): ["arn:aws-us-gov:iam::347038500609:role/private-connectivity-role-us-gov-west-1"]
+  - GovCloud (DoD):      ["arn:aws-us-gov:iam::347034940029:role/private-connectivity-role-us-gov-west-1"]
+Use ["*"] to allow any principal.
+EOT
+  type        = list(string)
+  default     = null
 }
