@@ -66,8 +66,8 @@ resource "aws_launch_template" "this" {
   # Graviton instance type.
   lifecycle {
     precondition {
-      condition     = var.ami_id == null || contains(data.aws_ec2_instance_type.this.supported_architectures, data.aws_ami.this[0].architecture)
-      error_message = "ami_id architecture (${var.ami_id != null ? data.aws_ami.this[0].architecture : "n/a"}) is not supported by instance_type ${var.instance_type} (supported: ${join(", ", data.aws_ec2_instance_type.this.supported_architectures)}). Choose an AMI and instance type with matching architecture."
+      condition     = alltrue([for a in data.aws_ami.this[*].architecture : contains(data.aws_ec2_instance_type.this.supported_architectures, a)])
+      error_message = "ami_id architecture is not supported by instance_type ${var.instance_type} (supported: ${join(", ", data.aws_ec2_instance_type.this.supported_architectures)}). Choose an AMI and instance type with matching architecture."
     }
   }
 
