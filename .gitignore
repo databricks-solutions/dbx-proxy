@@ -38,3 +38,8 @@ terraform/**/.tfvars
 **/.terraform.lock.hcl
 **/terraform*.tfstate
 **/terraform*.backup
+
+# ai
+.claude
+.isaac
+.superpowers
