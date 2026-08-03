@@ -1,0 +1,47 @@
+version: 2
+updates:
+  # Keep GitHub Actions (SHA-pinned) up to date.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    # Bundle minor + patch bumps into one PR; major bumps still open
+    # individually so breaking changes get reviewed in isolation.
+    groups:
+      actions-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Keep Docker base images up to date across all Dockerfiles
+  # (docker/, tests/docker/, tests/docker/render-config/).
+  - package-ecosystem: "docker"
+    directories:
+      - "**/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    # Bundle minor + patch bumps into one PR; major bumps still open
+    # individually so breaking changes get reviewed in isolation.
+    groups:
+      docker-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
