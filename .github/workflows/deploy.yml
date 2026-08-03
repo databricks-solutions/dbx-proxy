@@ -16,6 +16,8 @@ env:
 jobs:
   docker-deploy:
     runs-on: ubuntu-latest
+    # Publishing is gated on the "release" environment.
+    environment: release
     permissions:
       contents: read
       packages: write
